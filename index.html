@@ -207,6 +207,12 @@ h1 span b{transition-duration:1.15s;transition-timing-function:var(--motion-ease
 @keyframes premiumCardEnter{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 #grid .proj:not(.hide){animation:premiumCardEnter .65s var(--motion-ease) both;animation-delay:calc(min(var(--card-order,0),8)*65ms)}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.rv{filter:none!important}.hero .eyebrow,.hero .lead,.hero .ctas,.hero .meta,.hero .scroll,#grid .proj:not(.hide){animation:none!important}}
+</style><style id="premium-motion-v2">
+/* Elements are visible by default; JS activates transitions only when ready. */
+html.motion-ready .motion-item{opacity:0;transform:translate3d(0,30px,0);filter:blur(7px);transition:opacity .85s cubic-bezier(.22,1,.36,1),transform 1s cubic-bezier(.22,1,.36,1),filter .85s ease;transition-delay:var(--motion-delay,0ms);will-change:opacity,transform,filter}
+html.motion-ready .motion-item.motion-visible{opacity:1;transform:translate3d(0,0,0);filter:blur(0);will-change:auto}
+html.motion-ready .motion-item.motion-visible:hover{transition-delay:0ms}
+@media(prefers-reduced-motion:reduce){html.motion-ready .motion-item{opacity:1!important;transform:none!important;filter:none!important;transition:none!important}}
 </style></head>
 <body>
 <div id="pre" aria-hidden="true">YUGESH P<span class="c">.</span></div>
@@ -484,5 +490,33 @@ loadContent().catch(e=>console.error("Portfolio loading failed",e));
 async function updateResumeLink(){if(!db)return;const url=db.storage.from('portfolio-media').getPublicUrl('resume/current.pdf').data.publicUrl;try{const r=await fetch(url,{method:'HEAD',cache:'no-store'});if(!r.ok)return;document.querySelectorAll('a').forEach(a=>{if(a.textContent.includes('Download Resume')){a.href=url+'?v='+Date.now();a.setAttribute('download','Yugesh_Resume.pdf')}})}catch(e){console.warn('Resume check failed',e)}}
 updateResumeLink();
 </script>
-<script id="premium-motion-init">(function(){const grid=document.getElementById('grid');if(!grid)return;const assign=()=>grid.querySelectorAll('.proj').forEach((el,i)=>el.style.setProperty('--card-order',i%9));assign();new MutationObserver(assign).observe(grid,{childList:true});})();</script></body>
+<script id="premium-motion-init">(function(){const grid=document.getElementById('grid');if(!grid)return;const assign=()=>grid.querySelectorAll('.proj').forEach((el,i)=>el.style.setProperty('--card-order',i%9));assign();new MutationObserver(assign).observe(grid,{childList:true});})();</script><script id="premium-motion-v2-init">
+(()=>{
+ const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(reduce)return;
+ const selectors=['section h2','section h3','section p','section .eyebrow','section .lead','section .ctas','section .card','section .step','section .tool','section .cert','section .proj','section .section-head','footer h2','footer p','footer a'];
+ const seen=new WeakSet();
+ const observer=new IntersectionObserver(entries=>{
+  for(const entry of entries){if(entry.isIntersecting){entry.target.classList.add('motion-visible');observer.unobserve(entry.target)}}
+ },{threshold:0.08,rootMargin:'0px 0px -25px 0px'});
+ function register(){
+  const elements=document.querySelectorAll(selectors.join(','));
+  elements.forEach((el,i)=>{
+   if(seen.has(el)||el.closest('#pre,dialog,.inline-player')||el.classList.contains('hide'))return;
+   seen.add(el);
+   el.classList.add('motion-item');
+   el.style.setProperty('--motion-delay',((i%4)*85)+'ms');
+   // Keep above-the-fold content visible immediately; animate as it enters.
+   observer.observe(el);
+  });
+ }
+ // Register after initial layout, before activating the hidden-to-visible transition.
+ register();document.documentElement.classList.add('motion-ready');
+ // Existing dynamically loaded Supabase cards are registered as they appear.
+ const grid=document.getElementById('grid');
+ if(grid)new MutationObserver(()=>requestAnimationFrame(register)).observe(grid,{childList:true});
+ // Ensure that no content stays invisible when navigating back or switching tabs.
+ window.addEventListener('pageshow',()=>register());
+})();
+</script></body>
 </html>
