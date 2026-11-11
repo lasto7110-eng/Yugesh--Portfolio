@@ -213,6 +213,17 @@ html.motion-ready .motion-item{opacity:0;transform:translate3d(0,30px,0);filter:
 html.motion-ready .motion-item.motion-visible{opacity:1;transform:translate3d(0,0,0);filter:blur(0);will-change:auto}
 html.motion-ready .motion-item.motion-visible:hover{transition-delay:0ms}
 @media(prefers-reduced-motion:reduce){html.motion-ready .motion-item{opacity:1!important;transform:none!important;filter:none!important;transition:none!important}}
+</style><style id="portfolio-refined-layout">
+.premium-services{padding-top:45px;padding-bottom:45px}
+.services-intro{max-width:660px;line-height:1.8;margin:-10px 0 30px;opacity:.76}
+.services-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.service-card{min-height:265px;display:flex;flex-direction:column;align-items:flex-start;gap:15px;padding:28px;transition:transform .6s cubic-bezier(.22,1,.36,1),box-shadow .6s ease,border-color .6s ease}
+.service-card:hover{transform:translateY(-7px);box-shadow:0 18px 45px rgba(0,0,0,.08)}
+.service-no{font-size:.72rem;letter-spacing:.15em;opacity:.6}
+.service-card h3{font-size:clamp(1.35rem,2vw,1.8rem);margin:5px 0 0}
+.service-card p{line-height:1.75;margin:0;flex:1}
+.service-card a{font-size:.88rem;text-decoration:none;font-weight:600}
+@media(max-width:760px){.services-grid{grid-template-columns:1fr}.service-card{min-height:0;padding:24px}}
 </style></head>
 <body>
 <div id="pre" aria-hidden="true">YUGESH P<span class="c">.</span></div>
@@ -221,7 +232,7 @@ html.motion-ready .motion-item.motion-visible:hover{transition-delay:0ms}
 <div class="wrap">
 <a class="brand" href="#home">YUGESH P<span class="c">.</span></a>
 <div class="menu" id="menu">
-<a href="#home">Home</a><a href="#about">About</a><a href="#experience">Experience</a><a href="#work">Work</a><a href="#skills">Skills</a><a href="#contact">Contact</a>
+<a href="#home">Home</a><a href="#about">About</a><a href="#services">Services</a><a href="#experience">Experience</a><a href="#work">Work</a><a href="#skills">Skills</a><a href="#contact">Contact</a>
 </div>
 <a class="btn navcta" href="#contact">Let's Connect ↗</a>
 <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false"><i></i><i></i></button>
@@ -232,7 +243,7 @@ html.motion-ready .motion-item.motion-visible:hover{transition-delay:0ms}
 <div class="wrap">
 <div class="ft">
 <div><div class="brand">YUGESH P<span class="c">.</span></div><div class="tag">EDIT. DESIGN. CREATE.</div></div>
-<nav aria-label="Footer"><a href="#home">Home</a><a href="#about">About</a><a href="#experience">Experience</a><a href="#work">Work</a><a href="#skills">Skills</a><a href="#contact">Contact</a></nav>
+<nav aria-label="Footer"><a href="#home">Home</a><a href="#about">About</a><a href="#services">Services</a><a href="#experience">Experience</a><a href="#work">Work</a><a href="#skills">Skills</a><a href="#contact">Contact</a></nav>
 <div><a id="fmail" href="#"></a><br><a id="fli" href="#" target="_blank" rel="noopener">LinkedIn</a><br><a href="#home">Back to Top ↑</a></div>
 </div>
 <div class="copy">© 2026 Yugesh P. All rights reserved.</div>
@@ -303,6 +314,19 @@ $("#app").innerHTML=`
 <div class="tags"><span>Video editing</span><span>Graphic design</span><span>Digital marketing</span><span>AI-assisted content</span></div></div>
 </div></section>
 
+<section id="services" class="premium-services">
+<div class="wrap">
+<span class="label">What I do</span>
+<h2>Creative services, <span class="c">thoughtfully delivered.</span></h2>
+<p class="services-intro">From the first idea to the final export, I create clear, engaging visuals for brands, events and digital platforms.</p>
+<div class="services-grid">
+<div class="card rv service-card"><span class="service-no">01 / MOTION</span><h3>Video Editing</h3><p>Promotional reels, event highlights, short-form storytelling and engaging social-first edits.</p><a href="#work">Explore projects ↗</a></div>
+<div class="card rv service-card"><span class="service-no">02 / DESIGN</span><h3>Graphic Design</h3><p>Event posters, campaign creatives, social media artwork and polished visual layouts.</p><a href="#work">Explore projects ↗</a></div>
+<div class="card rv service-card"><span class="service-no">03 / DIGITAL</span><h3>AI & Digital Content</h3><p>AI-assisted concepts, content planning and creative assets for digital marketing.</p><a href="#contact">Discuss a project ↗</a></div>
+</div>
+</div>
+</section>
+
 <section id="experience" style="padding-top:24px"><div class="wrap">
 <span class="label">Experience</span><h2>My creative journey.</h2>
 <div class="tl">
@@ -324,26 +348,8 @@ $("#app").innerHTML=`
 <div class="tg">${Object.entries(tools).map(([k,v])=>`<div class="rv"><h3>${k}</h3>${v.map(([n,l])=>`<div class="tool"><i>${n[0]}</i>${n}${l?`<small>${l}</small>`:""}</div>`).join("")}</div>`).join("")}</div>
 </div></section>
 
-<section id="ai"><div class="wrap">
-<span class="label">AI & creativity</span><h2>Creativity meets <span class="pe c">intelligence.</span></h2>
-<p style="max-width:44em;margin:-20px 0 36px">I explore AI-assisted creative tools to support ideation, visual storytelling, content development, and video production.</p>
-<div class="flow" id="flow">${steps.map((s,i)=>`<button class="step ${i?'':'on'}" data-i="${i}"><span class="n"></span><b>${i+1}. ${s[0]}</b><h3>${s[1]}</h3></button>`).join("")}</div>
-</div></section>
 
-<section id="edu" style="padding-top:24px"><div class="wrap">
-<span class="label">Education</span><h2>Academic foundation.</h2>
-<div class="tl">
-<div class="it rv card"><div class="date">2023 – 2026</div><h3>B.A. English Literature</h3><p class="sub">Sri S. Ramasamy Naidu Memorial College, Sattur · Affiliated to Madurai Kamaraj University</p></div>
-<div class="it rv card"><div class="date">2021 – 2023</div><h3>Higher Secondary Education</h3><p class="sub">Government Higher Secondary School, Padanthal</p></div>
-<div class="it rv card"><div class="date">2021</div><h3>SSLC</h3><p class="sub">Sri Venkateswara Matriculation School, Sattur</p></div>
-</div></div></section>
 
-<section id="lead" style="padding-top:24px"><div class="wrap">
-<span class="label">Leadership</span><h2>Beyond the design.</h2>
-<div class="g2">
-<div class="card rv"><div class="date">2024 – 2026</div><h3>Student President</h3><p class="sub">English Literature Department Association</p><p>Coordinated student programmes and departmental activities and supported communication between students and faculty.</p></div>
-<div class="card rv"><div class="date">&nbsp;</div><h3>President</h3><p class="sub">DELPHI Department Cultural Events</p><p>Coordinated cultural events, student teams, and event planning activities.</p></div>
-</div></div></section>
 
 <section id="certs" style="padding-top:24px"><div class="wrap">
 <span class="label">Certifications</span><h2>Always learning.</h2>
@@ -373,7 +379,7 @@ const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target
 document.querySelectorAll(".rv").forEach(el=>io.observe(el));
 const links=[...document.querySelectorAll(".menu a")];
 const so=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)links.forEach(a=>a.classList.toggle("on",a.hash==="#"+x.target.id))}),{rootMargin:"-45% 0px -50% 0px"});
-["home","about","experience","work","skills","contact"].forEach(id=>so.observe($("#"+id)));
+["home","about","services","experience","work","skills","certs","contact"].forEach(id=>so.observe($("#"+id)));
 /* progress + parallax */
 const bar=$("#bar");addEventListener("scroll",()=>{bar.style.width=scrollY/(document.documentElement.scrollHeight-innerHeight)*100+"%"},{passive:true});
 const pi=$("#ph img");if(pi&&matchMedia("(hover:hover) and (min-width:961px)").matches&&!matchMedia("(prefers-reduced-motion:reduce)").matches)
@@ -444,9 +450,6 @@ $("#grid").onclick=e=>{const b=e.target.closest(".proj");if(!b)return;const p=SI
  dlg.innerHTML=`<div class="mb"><button class="x" aria-label="Close" onclick="dlg.close()">×</button><span class="label">${escapeHTML(p.c)}</span><h3>${escapeHTML(p.t)}</h3>${media}<p style="margin-top:16px">${escapeHTML(p.d)}</p><dl><dt>Creative objective</dt><dd>${escapeHTML(p.obj)}</dd><dt>Tools used</dt><dd>${escapeHTML(p.tools)}</dd><dt>Production workflow</dt><dd>Idea → concept → create → refine. Add project-specific details in the SITE data.</dd>${p.link?`<dt>Project link</dt><dd><a class="c" href="${p.link}" target="_blank" rel="noopener">View project ↗</a></dd>`:""}</dl>${p.image||p.video?"":'<p style="font-size:.85rem">Placeholder example. Not a verified completed project.</p>'}</div>`;
  dlg.showModal()};
 dlg.onclick=e=>{if(e.target===dlg)dlg.close()};
-/* AI flow */
-const fl=$("#flow");fl.onclick=e=>{const s=e.target.closest(".step");if(!s)return;const i=+s.dataset.i;
- fl.querySelectorAll(".step").forEach((x,j)=>x.classList.toggle("on",j<=i&&j===i));fl.style.setProperty("--p",(i/3*84)+"%")};
 /* form validation → mailto */
 $("#form").onsubmit=e=>{e.preventDefault();const f=e.target,v=n=>f.elements[n].value.trim();let ok=true;
  [["n",v("n")?"":"Enter your name."],["e",/^\S+@\S+\.\S+$/.test(v("e"))?"":"Enter a valid email address."],["m",v("m").length>9?"":"Write at least 10 characters."]].forEach(([n,m])=>{f.elements[n].parentNode.querySelector(".err").textContent=m;if(m)ok=false});
