@@ -363,5 +363,31 @@ $("#form").onsubmit=e=>{e.preventDefault();const f=e.target,v=n=>f.elements[n].v
  [["n",v("n")?"":"Enter your name."],["e",/^\S+@\S+\.\S+$/.test(v("e"))?"":"Enter a valid email address."],["m",v("m").length>9?"":"Write at least 10 characters."]].forEach(([n,m])=>{f.elements[n].parentNode.querySelector(".err").textContent=m;if(m)ok=false});
  if(ok)location.href=`mailto:${SITE.email}?subject=${encodeURIComponent("Portfolio enquiry from "+v("n"))}&body=${encodeURIComponent(v("m")+"\n\n"+v("n")+" ("+v("e")+")")}`};
 </script>
+<script type="module">
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const SUPABASE_URL="https://arzkjiblnrvunqobunjk.supabase.co";
+const SUPABASE_KEY="sb_publishable_TK8EyJcuJKN4fCWq6cpIVQ_c5abN9wn";
+const db=createClient(SUPABASE_URL,SUPABASE_KEY);
+const escapeHTML=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeURL=x=>{try{const u=new URL(x,location.href);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
+async function loadContent(){
+ const {data,error}=await db.from('portfolio_items').select('*').order('created_at',{ascending:false});
+ if(error){console.warn('Portfolio content unavailable',error.message);return}
+ if(!data?.length)return;
+ const projects=data.filter(x=>x.category==='project'||x.category==='video');
+ const certs=data.filter(x=>x.category==='certificate');
+ if(projects.length){
+  const grid=document.querySelector('#grid');
+  const originalCount=SITE.projects.length;
+  SITE.projects.push(...projects.map(x=>({t:x.title,c:x.category==='video'?'Video Editing':'Graphic Design',d:x.description||'',obj:x.description||'',tools:'',image:safeURL(x.image_url),video:safeURL(x.video_url),link:''})));
+  grid.insertAdjacentHTML('afterbegin',projects.map((x,i)=>{const p=SITE.projects[originalCount+i];return `<button class="proj" data-i="${originalCount+i}" data-c="${escapeHTML(p.c)}" aria-label="Open ${escapeHTML(p.t)}"><div class="thumb">${p.image?`<img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.t)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:`<div class="in">${p.video?'Watch video':'New project'}</div>`}</div><div class="pb"><div><div class="cat">${escapeHTML(p.c)}</div><h3>${escapeHTML(p.t)}</h3></div><p>${escapeHTML(p.d)}</p></div></button>`}).join(''));
+ }
+ if(certs.length){
+  const box=document.querySelector('#certs .g3');
+  if(box)box.insertAdjacentHTML('afterbegin',certs.map(x=>`<div class="card cert rv"><div class="pv">${x.image_url?`<img src="${escapeHTML(safeURL(x.image_url))}" alt="${escapeHTML(x.title)}" style="width:100%;height:100%;object-fit:contain">`:''}</div><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML(x.description||'')}</p>${x.video_url?`<a href="${escapeHTML(safeURL(x.video_url))}" target="_blank" rel="noopener noreferrer">View certificate ↗</a>`:''}</div>`).join(''));
+ }
+}
+loadContent();
+</script>
 </body>
 </html>
