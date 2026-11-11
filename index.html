@@ -348,11 +348,15 @@ mn.onclick=e=>{if(e.target.tagName==="A"){mn.classList.remove("open");bg.setAttr
 $("#filters").onclick=e=>{const b=e.target.closest("button");if(!b)return;
  document.querySelectorAll("#filters button").forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-pressed",x===b)});
  document.querySelectorAll(".proj").forEach(p=>p.classList.toggle("hide",b.dataset.c!=="All Projects"&&p.dataset.c!==b.dataset.c))};
+function projectMedia(p){
+ const v=p.video||'';if(v){try{const u=new URL(v,location.href),h=u.hostname.toLowerCase();let embed='';if(h==='youtu.be'||h.endsWith('.youtube.com')||h==='youtube.com'){const id=h==='youtu.be'?u.pathname.slice(1):u.searchParams.get('v')||(u.pathname.match(/\/(?:shorts|embed)\/([^/]+)/)||[])[1];if(id&&/^[a-zA-Z0-9_-]{11}$/.test(id))embed='https://www.youtube-nocookie.com/embed/'+id}if(h==='drive.google.com'){const id=(u.pathname.match(/\/file\/d\/([^/]+)/)||[])[1];if(id&&/^[a-zA-Z0-9_-]+$/.test(id))embed='https://drive.google.com/file/d/'+id+'/preview'}if(embed)return `<iframe src="${escapeHTML(embed)}" title="${escapeHTML(p.t)} video" loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px"></iframe><p><a href="${escapeHTML(v)}" target="_blank" rel="noopener noreferrer">Open original video ↗</a></p>`;if(h==='instagram.com'||h.endsWith('.instagram.com'))return `${p.image?`<img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.t)}" style="width:100%;border-radius:12px">`:''}<p><a href="${escapeHTML(v)}" target="_blank" rel="noopener noreferrer">Watch on Instagram ↗</a></p>`;if(/\.mp4($|[?#])/i.test(u.pathname)||u.hostname.includes('supabase.co'))return `<video src="${escapeHTML(v)}" controls playsinline preload="metadata" style="width:100%;border-radius:12px"></video>`;return `<p><a href="${escapeHTML(v)}" target="_blank" rel="noopener noreferrer">Open video ↗</a></p>`}catch{}}
+ return p.image?`<img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.t)}" style="width:100%;border-radius:12px">`:`<div class="thumb" style="border-radius:12px;border:1px solid var(--border)"><div class="in">Add media in SITE.projects</div></div>`;
+}
 /* project modal */
 const dlg=$("#dlg");
 $("#grid").onclick=e=>{const b=e.target.closest(".proj");if(!b)return;const p=SITE.projects[b.dataset.i];
- const media=p.video?`<video src="${p.video}" controls preload="none" style="width:100%;border-radius:12px"></video>`:p.image?`<img src="${p.image}" alt="${p.t}" style="width:100%;border-radius:12px">`:`<div class="thumb" style="border-radius:12px;border:1px solid var(--border)"><div class="in">Add media in SITE.projects</div></div>`;
- dlg.innerHTML=`<div class="mb"><button class="x" aria-label="Close" onclick="dlg.close()">×</button><span class="label">${p.c}</span><h3>${p.t}</h3>${media}<p style="margin-top:16px">${p.d}</p><dl><dt>Creative objective</dt><dd>${p.obj}</dd><dt>Tools used</dt><dd>${p.tools}</dd><dt>Production workflow</dt><dd>Idea → concept → create → refine. Add project-specific details in the SITE data.</dd>${p.link?`<dt>Project link</dt><dd><a class="c" href="${p.link}" target="_blank" rel="noopener">View project ↗</a></dd>`:""}</dl>${p.image||p.video?"":'<p style="font-size:.85rem">Placeholder example. Not a verified completed project.</p>'}</div>`;
+ const media=projectMedia(p);
+ dlg.innerHTML=`<div class="mb"><button class="x" aria-label="Close" onclick="dlg.close()">×</button><span class="label">${escapeHTML(p.c)}</span><h3>${escapeHTML(p.t)}</h3>${media}<p style="margin-top:16px">${escapeHTML(p.d)}</p><dl><dt>Creative objective</dt><dd>${escapeHTML(p.obj)}</dd><dt>Tools used</dt><dd>${escapeHTML(p.tools)}</dd><dt>Production workflow</dt><dd>Idea → concept → create → refine. Add project-specific details in the SITE data.</dd>${p.link?`<dt>Project link</dt><dd><a class="c" href="${p.link}" target="_blank" rel="noopener">View project ↗</a></dd>`:""}</dl>${p.image||p.video?"":'<p style="font-size:.85rem">Placeholder example. Not a verified completed project.</p>'}</div>`;
  dlg.showModal()};
 dlg.onclick=e=>{if(e.target===dlg)dlg.close()};
 /* AI flow */
@@ -397,6 +401,8 @@ async function loadContent(){
  }
 }
 loadContent().catch(e=>console.error("Portfolio loading failed",e));
+async function updateResumeLink(){if(!db)return;const url=db.storage.from('portfolio-media').getPublicUrl('resume/current.pdf').data.publicUrl;try{const r=await fetch(url,{method:'HEAD',cache:'no-store'});if(!r.ok)return;document.querySelectorAll('a').forEach(a=>{if(a.textContent.includes('Download Resume')){a.href=url+'?v='+Date.now();a.setAttribute('download','Yugesh_Resume.pdf')}})}catch(e){console.warn('Resume check failed',e)}}
+updateResumeLink();
 </script>
 </body>
 </html>
