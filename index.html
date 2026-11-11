@@ -179,7 +179,7 @@ section{padding:72px 0}}
 <style id="inline-video-styles">
 #grid .proj .thumb{position:relative;overflow:hidden}#grid .proj .thumb>img{transition:transform .35s ease}#grid .proj:hover .thumb>img{transform:scale(1.045)}
 #grid .inline-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:54px;height:54px;border-radius:50%;background:rgba(15,15,18,.75);border:1px solid rgba(255,255,255,.65);color:#fff;font-size:20px;box-shadow:0 8px 25px #0005;pointer-events:none;backdrop-filter:blur(8px)}
-#grid .proj .pb .arrow{cursor:pointer;pointer-events:auto;position:relative;z-index:8}#grid .inline-arrow{font-size:23px;line-height:1;color:var(--accent,#ff4b32);margin-left:auto;pointer-events:none}
+#grid .proj .pb .arrow{cursor:pointer;pointer-events:auto;position:relative;z-index:8}#grid .inline-arrow{font-size:23px;line-height:1;color:var(--accent,#ff4b32);margin-left:auto;pointer-events:auto;cursor:pointer;position:relative;z-index:8}
 #grid .proj.previewing .thumb>img,#grid .proj.full-playing .thumb>img{opacity:0;transition:opacity .28s ease}#grid .thumb.playing{z-index:2}#grid .thumb.playing>.inline-play{display:none}
 #grid .proj.previewing .inline-player{pointer-events:none;opacity:0;animation:previewFade .28s ease forwards}@keyframes previewFade{to{opacity:1}}#grid .inline-player{position:absolute;inset:0;background:#080808;z-index:5;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #grid .inline-player video,#grid .inline-player iframe{width:100%;height:100%;border:0;object-fit:contain;background:#080808}
@@ -381,7 +381,7 @@ function closeInlineVideo(card){
 function openInlineVideo(card,full=false){
  const p=SITE.projects[card.dataset.i];if(!p?.video)return;
  if(card.classList.contains(full?'full-playing':'previewing'))return;
- document.querySelectorAll('#grid .proj.playing').forEach(x=>{if(x!==card)closeInlineVideo(x)});
+ document.querySelectorAll('#grid .proj.previewing, #grid .proj.full-playing').forEach(x=>{if(x!==card)closeInlineVideo(x)});
  closeInlineVideo(card);
  const markup=inlineVideoHTML(p,!full);if(!markup)return;
  const thumb=card.querySelector('.thumb');
@@ -394,7 +394,7 @@ const portfolioGrid=document.querySelector('#grid');
 // Hover starts ONLY over the ↗ arrow, not over the whole thumbnail.
 portfolioGrid.addEventListener('pointerover',e=>{
  if(e.pointerType==='touch')return;
- const arrow=e.target.closest('.proj .pb .arrow');if(!arrow)return;
+ const arrow=e.target.closest('.proj .pb .arrow, .proj .pb .inline-arrow');if(!arrow)return;
  const card=arrow.closest('.proj');if(card&&!card.classList.contains('full-playing'))openInlineVideo(card,false);
 });
 // Leaving the card immediately stops playback and restores the thumbnail.
