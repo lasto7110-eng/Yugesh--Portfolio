@@ -179,9 +179,9 @@ section{padding:72px 0}}
 <style id="inline-video-styles">
 #grid .proj .thumb{position:relative;overflow:hidden}#grid .proj .thumb>img{transition:transform .35s ease}#grid .proj:hover .thumb>img{transform:scale(1.045)}
 #grid .inline-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:54px;height:54px;border-radius:50%;background:rgba(15,15,18,.75);border:1px solid rgba(255,255,255,.65);color:#fff;font-size:20px;box-shadow:0 8px 25px #0005;pointer-events:none;backdrop-filter:blur(8px)}
-#grid .inline-arrow{font-size:23px;line-height:1;color:var(--accent,#ff4b32);margin-left:auto;pointer-events:none}
-#grid .thumb.playing{z-index:2}#grid .thumb.playing>.inline-play{display:none}
-#grid .inline-player{position:absolute;inset:0;background:#080808;z-index:5;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#grid .proj .pb .arrow{cursor:pointer;pointer-events:auto;position:relative;z-index:8}#grid .inline-arrow{font-size:23px;line-height:1;color:var(--accent,#ff4b32);margin-left:auto;pointer-events:none}
+#grid .proj.previewing .thumb>img,#grid .proj.full-playing .thumb>img{opacity:0;transition:opacity .28s ease}#grid .thumb.playing{z-index:2}#grid .thumb.playing>.inline-play{display:none}
+#grid .proj.previewing .inline-player{pointer-events:none;opacity:0;animation:previewFade .28s ease forwards}@keyframes previewFade{to{opacity:1}}#grid .inline-player{position:absolute;inset:0;background:#080808;z-index:5;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #grid .inline-player video,#grid .inline-player iframe{width:100%;height:100%;border:0;object-fit:contain;background:#080808}
 #grid .inline-close{position:absolute;right:8px;top:8px;z-index:7;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.85);color:#fff;font-size:25px;line-height:1;cursor:pointer;border:1px solid #ffffff80}
 </style></head>
@@ -362,27 +362,53 @@ function projectMedia(p){
 }
 /* project modal */
 const dlg=$("#dlg");
-function inlineVideoHTML(p){
+function inlineVideoHTML(p, preview=false){
  const v=p.video||'';if(!v)return '';
  try{const u=new URL(v,location.href),h=u.hostname.toLowerCase();let src='';
- if(h==='youtu.be'||h==='youtube.com'||h.endsWith('.youtube.com')){const id=h==='youtu.be'?u.pathname.slice(1):u.searchParams.get('v')||(u.pathname.match(/\/(?:shorts|embed)\/([^/]+)/)||[])[1];if(id&&/^[\w-]{11}$/.test(id))src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0'}
+ if(h==='youtu.be'||h==='youtube.com'||h.endsWith('.youtube.com')){const id=h==='youtu.be'?u.pathname.slice(1):u.searchParams.get('v')||(u.pathname.match(/\/(?:shorts|embed)\/([^/]+)/)||[])[1];if(id&&/^[\w-]{11}$/.test(id))src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute='+(preview?'1':'0')+'&playsinline=1&controls='+(preview?'0':'1')+'&rel=0'}
  else if(h==='drive.google.com'){const id=(u.pathname.match(/\/file\/d\/([^/]+)/)||[])[1];if(id&&/^[\w-]+$/.test(id))src='https://drive.google.com/file/d/'+id+'/preview'}
  else if(h==='instagram.com'||h.endsWith('.instagram.com')){const match=u.pathname.match(/^\/(reel|p|tv)\/([\w-]+)/);if(match)src='https://www.instagram.com/'+match[1]+'/'+match[2]+'/embed/'}
- if(src)return `<iframe src="${escapeHTML(src)}" title="${escapeHTML(p.t)} video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="eager"></iframe>`;
- if(u.protocol==='https:'||u.protocol==='http:')return `<video src="${escapeHTML(v)}" controls autoplay playsinline preload="metadata"></video>`;
+ if(src)return `<iframe src="${escapeHTML(src)}" title="${escapeHTML(p.t)} video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="eager" ${preview?'tabindex="-1"':''}></iframe>`;
+ if(u.protocol==='https:'||u.protocol==='http:')return `<video src="${escapeHTML(v)}" ${preview?'muted':'controls'} autoplay playsinline preload="auto"></video>`;
  }catch{}return '';
 }
-function closeInlineVideo(card){const thumb=card.querySelector('.thumb');if(!thumb)return;const player=thumb.querySelector('.inline-player');if(player){const vid=player.querySelector('video');if(vid)vid.pause();player.remove()}thumb.classList.remove('playing')}
-$("#grid").addEventListener('click',e=>{
+function closeInlineVideo(card){
+ const thumb=card.querySelector('.thumb');if(!thumb)return;
+ const player=thumb.querySelector('.inline-player');
+ if(player){const vid=player.querySelector('video');if(vid){vid.pause();vid.removeAttribute('src');vid.load()}player.remove()}
+ thumb.classList.remove('playing');card.classList.remove('previewing','full-playing');
+}
+function openInlineVideo(card,full=false){
+ const p=SITE.projects[card.dataset.i];if(!p?.video)return;
+ if(card.classList.contains(full?'full-playing':'previewing'))return;
+ document.querySelectorAll('#grid .proj.playing').forEach(x=>{if(x!==card)closeInlineVideo(x)});
+ closeInlineVideo(card);
+ const markup=inlineVideoHTML(p,!full);if(!markup)return;
+ const thumb=card.querySelector('.thumb');
+ const player=document.createElement('div');player.className='inline-player';
+ player.innerHTML=markup+(full?'<span class="inline-close" aria-label="Close video" title="Close video">×</span>':'');
+ thumb.append(player);thumb.classList.add('playing');card.classList.add(full?'full-playing':'previewing');
+ const vid=player.querySelector('video');if(vid){vid.muted=!full;vid.currentTime=0;const attempt=vid.play();if(attempt?.catch)attempt.catch(()=>{});}
+}
+const portfolioGrid=document.querySelector('#grid');
+// Hover starts ONLY over the ↗ arrow, not over the whole thumbnail.
+portfolioGrid.addEventListener('pointerover',e=>{
+ if(e.pointerType==='touch')return;
+ const arrow=e.target.closest('.proj .pb .arrow');if(!arrow)return;
+ const card=arrow.closest('.proj');if(card&&!card.classList.contains('full-playing'))openInlineVideo(card,false);
+});
+// Leaving the card immediately stops playback and restores the thumbnail.
+portfolioGrid.addEventListener('pointerout',e=>{
+ const card=e.target.closest('.proj');if(!card||card.contains(e.relatedTarget))return;
+ closeInlineVideo(card);
+});
+portfolioGrid.addEventListener('click',e=>{
  const card=e.target.closest('.proj');if(!card)return;
  const p=SITE.projects[card.dataset.i];if(!p?.video)return;
  if(e.target.closest('.inline-close')){e.preventDefault();e.stopImmediatePropagation();closeInlineVideo(card);return}
- if(card.querySelector('.inline-player')){e.preventDefault();e.stopImmediatePropagation();return}
  e.preventDefault();e.stopImmediatePropagation();
- document.querySelectorAll('#grid .proj.playing').forEach(closeInlineVideo);
- const markup=inlineVideoHTML(p);if(!markup){window.open(p.video,'_blank','noopener,noreferrer');return}
- const thumb=card.querySelector('.thumb');thumb.classList.add('playing');
- const player=document.createElement('div');player.className='inline-player';player.innerHTML=markup+'<span class="inline-close" aria-label="Close video" title="Close video">×</span>';thumb.append(player);
+ // A click opens sound-enabled controls. Mobile tap works as well.
+ openInlineVideo(card,true);
 },true);
 $("#grid").onclick=e=>{const b=e.target.closest(".proj");if(!b)return;const p=SITE.projects[b.dataset.i];
  const media=projectMedia(p);
