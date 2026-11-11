@@ -388,7 +388,7 @@ async function loadContent(){
  }
  if(certs.length){
   const box=document.querySelector('#certs .g3');
-  if(box)box.insertAdjacentHTML('afterbegin',certs.map(x=>`<div class="card cert rv"><div class="pv">${x.image_url?`<img src="${escapeHTML(safeURL(x.image_url))}" alt="${escapeHTML(x.title)}" style="width:100%;height:100%;object-fit:contain">`:''}</div><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML(x.description||'')}</p>${x.video_url?`<a href="${escapeHTML(safeURL(x.video_url))}" target="_blank" rel="noopener noreferrer">View certificate ↗</a>`:''}</div>`).join(''));
+  if(box)box.insertAdjacentHTML('afterbegin',certs.map(x=>`<div class="card cert rv in"><div class="pv">${x.image_url?`<img src="${escapeHTML(safeURL(x.image_url))}" alt="${escapeHTML(x.title)}" style="width:100%;height:100%;object-fit:contain">`:''}</div><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML(x.description||'')}</p>${x.video_url?`<a href="${escapeHTML(safeURL(x.video_url))}" target="_blank" rel="noopener noreferrer">View certificate ↗</a>`:''}</div>`).join(''));
  }
 }
 loadContent().catch(e=>console.error("Portfolio loading failed",e));
