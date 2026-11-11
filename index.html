@@ -176,7 +176,15 @@ section{padding:72px 0}}
 @media(max-width:620px){.cards3,.grid,.g2,.tg,.flow,.g3{grid-template-columns:1fr}.ctas .btn{width:100%;justify-content:center}.mb dl{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.rv,h1 span b,.photo{opacity:1!important;transform:none!important}#pre{display:none}}
 </style>
-</head>
+<style id="inline-video-styles">
+#grid .proj .thumb{position:relative;overflow:hidden}#grid .proj .thumb>img{transition:transform .35s ease}#grid .proj:hover .thumb>img{transform:scale(1.045)}
+#grid .inline-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:54px;height:54px;border-radius:50%;background:rgba(15,15,18,.75);border:1px solid rgba(255,255,255,.65);color:#fff;font-size:20px;box-shadow:0 8px 25px #0005;pointer-events:none;backdrop-filter:blur(8px)}
+#grid .inline-arrow{font-size:23px;line-height:1;color:var(--accent,#ff4b32);margin-left:auto;pointer-events:none}
+#grid .thumb.playing{z-index:2}#grid .thumb.playing>.inline-play{display:none}
+#grid .inline-player{position:absolute;inset:0;background:#080808;z-index:5;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#grid .inline-player video,#grid .inline-player iframe{width:100%;height:100%;border:0;object-fit:contain;background:#080808}
+#grid .inline-close{position:absolute;right:8px;top:8px;z-index:7;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.85);color:#fff;font-size:25px;line-height:1;cursor:pointer;border:1px solid #ffffff80}
+</style></head>
 <body>
 <div id="pre" aria-hidden="true">YUGESH P<span class="c">.</span></div>
 <div id="bar"></div>
@@ -276,7 +284,7 @@ $("#app").innerHTML=`
 <section id="work" style="padding-top:24px"><div class="wrap">
 <span class="label">Selected work</span><h2>My creative <span class="c">portfolio.</span></h2>
 <div class="filters" id="filters" role="group" aria-label="Filter projects">${cats.map((c,i)=>`<button data-c="${c}" class="${i?'':'on'}" aria-pressed="${!i}">${c}</button>`).join("")}</div>
-<div class="grid" id="grid">${SITE.projects.map((p,i)=>`<button class="proj" data-i="${i}" data-c="${p.c}" aria-label="Open ${p.t}"><div class="thumb">${p.image?`<img src="${p.image}" alt="${p.t}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:`<div class="in">Project ${String(i+1).padStart(2,"0")}</div>`}${p.image||p.video?"":'<span class="badge">Editable example</span>'}</div><div class="pb"><div><div class="cat">${p.c}</div><h3>${p.t}</h3></div>${ar}<p>${p.d}</p></div></button>`).join("")}</div>
+<div class="grid" id="grid">${SITE.projects.map((p,i)=>`<button class="proj" data-i="${i}" data-c="${p.c}" aria-label="Open ${p.t}"><div class="thumb">${p.image?`<img src="${p.image}" alt="${p.t}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:`<div class="in">Project ${String(i+1).padStart(2,"0")}</div>`}${p.image||p.video?"":'<span class="badge">Editable example</span>'}${p.video?'<span class="inline-play" aria-hidden="true">▶</span>':''}</div><div class="pb"><div><div class="cat">${p.c}</div><h3>${p.t}</h3></div>${ar}<p>${p.d}</p></div></button>`).join("")}</div>
 <p style="margin-top:22px;font-size:.88rem">These are placeholders, not verified completed projects. Add real media in the SITE data at the top of this file.</p>
 </div></section>
 
@@ -354,6 +362,28 @@ function projectMedia(p){
 }
 /* project modal */
 const dlg=$("#dlg");
+function inlineVideoHTML(p){
+ const v=p.video||'';if(!v)return '';
+ try{const u=new URL(v,location.href),h=u.hostname.toLowerCase();let src='';
+ if(h==='youtu.be'||h==='youtube.com'||h.endsWith('.youtube.com')){const id=h==='youtu.be'?u.pathname.slice(1):u.searchParams.get('v')||(u.pathname.match(/\/(?:shorts|embed)\/([^/]+)/)||[])[1];if(id&&/^[\w-]{11}$/.test(id))src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0'}
+ else if(h==='drive.google.com'){const id=(u.pathname.match(/\/file\/d\/([^/]+)/)||[])[1];if(id&&/^[\w-]+$/.test(id))src='https://drive.google.com/file/d/'+id+'/preview'}
+ else if(h==='instagram.com'||h.endsWith('.instagram.com')){const match=u.pathname.match(/^\/(reel|p|tv)\/([\w-]+)/);if(match)src='https://www.instagram.com/'+match[1]+'/'+match[2]+'/embed/'}
+ if(src)return `<iframe src="${escapeHTML(src)}" title="${escapeHTML(p.t)} video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="eager"></iframe>`;
+ if(u.protocol==='https:'||u.protocol==='http:')return `<video src="${escapeHTML(v)}" controls autoplay playsinline preload="metadata"></video>`;
+ }catch{}return '';
+}
+function closeInlineVideo(card){const thumb=card.querySelector('.thumb');if(!thumb)return;const player=thumb.querySelector('.inline-player');if(player){const vid=player.querySelector('video');if(vid)vid.pause();player.remove()}thumb.classList.remove('playing')}
+$("#grid").addEventListener('click',e=>{
+ const card=e.target.closest('.proj');if(!card)return;
+ const p=SITE.projects[card.dataset.i];if(!p?.video)return;
+ if(e.target.closest('.inline-close')){e.preventDefault();e.stopImmediatePropagation();closeInlineVideo(card);return}
+ if(card.querySelector('.inline-player')){e.preventDefault();e.stopImmediatePropagation();return}
+ e.preventDefault();e.stopImmediatePropagation();
+ document.querySelectorAll('#grid .proj.playing').forEach(closeInlineVideo);
+ const markup=inlineVideoHTML(p);if(!markup){window.open(p.video,'_blank','noopener,noreferrer');return}
+ const thumb=card.querySelector('.thumb');thumb.classList.add('playing');
+ const player=document.createElement('div');player.className='inline-player';player.innerHTML=markup+'<span class="inline-close" aria-label="Close video" title="Close video">×</span>';thumb.append(player);
+},true);
 $("#grid").onclick=e=>{const b=e.target.closest(".proj");if(!b)return;const p=SITE.projects[b.dataset.i];
  const media=projectMedia(p);
  dlg.innerHTML=`<div class="mb"><button class="x" aria-label="Close" onclick="dlg.close()">×</button><span class="label">${escapeHTML(p.c)}</span><h3>${escapeHTML(p.t)}</h3>${media}<p style="margin-top:16px">${escapeHTML(p.d)}</p><dl><dt>Creative objective</dt><dd>${escapeHTML(p.obj)}</dd><dt>Tools used</dt><dd>${escapeHTML(p.tools)}</dd><dt>Production workflow</dt><dd>Idea → concept → create → refine. Add project-specific details in the SITE data.</dd>${p.link?`<dt>Project link</dt><dd><a class="c" href="${p.link}" target="_blank" rel="noopener">View project ↗</a></dd>`:""}</dl>${p.image||p.video?"":'<p style="font-size:.85rem">Placeholder example. Not a verified completed project.</p>'}</div>`;
@@ -382,13 +412,14 @@ async function loadContent(){
  if(error){console.warn('Portfolio content unavailable',error.message);return}
  if(!data?.length)return;
  console.info('Portfolio items loaded:',data.length);
- const projects=data.filter(x=>x.category==='project'||x.category==='video');
+ const categoryMap={video:'Video Editing',project:'Graphic Design',graphic_design:'Graphic Design',event_posters:'Event Posters',social_media:'Social Media',ai_projects:'AI Projects'};
+ const projects=data.filter(x=>Object.hasOwn(categoryMap,x.category));
  const certs=data.filter(x=>x.category==='certificate');
  if(projects.length){
   const grid=document.querySelector('#grid');
   const originalCount=SITE.projects.length;
-  SITE.projects.push(...projects.map(x=>({t:x.title,c:x.category==='video'?'Video Editing':'Graphic Design',d:x.description||'',obj:x.description||'',tools:'',image:safeURL(x.image_url),video:safeURL(x.video_url),link:''})));
-  grid.insertAdjacentHTML('afterbegin',projects.map((x,i)=>{const p=SITE.projects[originalCount+i];return `<button class="proj" data-i="${originalCount+i}" data-c="${escapeHTML(p.c)}" aria-label="Open ${escapeHTML(p.t)}"><div class="thumb">${p.image?`<img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.t)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:`<div class="in">${p.video?'Watch video':'New project'}</div>`}</div><div class="pb"><div><div class="cat">${escapeHTML(p.c)}</div><h3>${escapeHTML(p.t)}</h3></div><p>${escapeHTML(p.d)}</p></div></button>`}).join(''));
+  SITE.projects.push(...projects.map(x=>({t:x.title,c:categoryMap[x.category],d:x.description||'',obj:x.description||'',tools:'',image:safeURL(x.image_url),video:safeURL(x.video_url),link:''})));
+  grid.insertAdjacentHTML('afterbegin',projects.map((x,i)=>{const p=SITE.projects[originalCount+i];return `<button class="proj" data-i="${originalCount+i}" data-c="${escapeHTML(p.c)}" aria-label="Open ${escapeHTML(p.t)}"><div class="thumb">${p.image?`<img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.t)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:`<div class="in">${p.video?'Watch video':'New project'}</div>`}${p.video?'<span class="inline-play" aria-hidden="true">▶</span>':''}</div><div class="pb"><div><div class="cat">${escapeHTML(p.c)}</div><h3>${escapeHTML(p.t)}</h3></div>${p.video?'<span class="inline-arrow" aria-hidden="true">↗</span>':''}<p>${escapeHTML(p.d)}</p></div></button>`}).join(''));
  }
  if(certs.length){
   const box=document.querySelector('#certs .g3');
