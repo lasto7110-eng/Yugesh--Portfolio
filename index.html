@@ -388,7 +388,12 @@ async function loadContent(){
  }
  if(certs.length){
   const box=document.querySelector('#certs .g3');
-  if(box)box.insertAdjacentHTML('afterbegin',certs.map(x=>`<div class="card cert rv in"><div class="pv">${x.image_url?`<img src="${escapeHTML(safeURL(x.image_url))}" alt="${escapeHTML(x.title)}" style="width:100%;height:100%;object-fit:contain">`:''}</div><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML(x.description||'')}</p>${x.video_url?`<a href="${escapeHTML(safeURL(x.video_url))}" target="_blank" rel="noopener noreferrer">View certificate ↗</a>`:''}</div>`).join(''));
+  if(box)box.insertAdjacentHTML('afterbegin',certs.map(x=>{
+   const image=safeURL(x.image_url);
+   const certificateLink=safeURL(x.video_url)||image;
+   const preview=image?`<img src="${escapeHTML(image)}" alt="${escapeHTML(x.title)}" style="width:100%;height:100%;object-fit:contain">`:'Certificate preview';
+   return `<div class="card cert rv in"><div class="pv">${certificateLink?`<a href="${escapeHTML(certificateLink)}" target="_blank" rel="noopener noreferrer" aria-label="View ${escapeHTML(x.title)} certificate" style="display:block;width:100%;height:100%;text-decoration:none;color:inherit">${preview}</a>`:preview}</div><h3>${escapeHTML(x.title)}</h3>${x.description?`<p>${escapeHTML(x.description)}</p>`:''}${certificateLink?`<a href="${escapeHTML(certificateLink)}" target="_blank" rel="noopener noreferrer">View Certificate ↗</a>`:''}</div>`;
+  }).join(''));
  }
 }
 loadContent().catch(e=>console.error("Portfolio loading failed",e));
