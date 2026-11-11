@@ -224,25 +224,21 @@ html.motion-ready .motion-item.motion-visible:hover{transition-delay:0ms}
 .service-card p{line-height:1.75;margin:0;flex:1}
 .service-card a{font-size:.88rem;text-decoration:none;font-weight:600}
 @media(max-width:760px){.services-grid{grid-template-columns:1fr}.service-card{min-height:0;padding:24px}}
-</style><style id="horizontal-projects-v3">
-/* Vertical wheel/trackpad scroll drives a sticky horizontal project gallery. */
-@media(min-width:769px) and (prefers-reduced-motion:no-preference){
- #work.horizontal-work{position:relative;min-height:100vh;padding-top:0!important;overflow:clip;overflow-clip-margin:0}
- #work .work-pin{position:sticky;top:0;height:100vh;min-height:640px;display:flex;align-items:center;overflow:hidden}
- #work .work-pin>.wrap{width:100%;max-width:100%;padding-left:max(5vw,24px);padding-right:max(5vw,24px)}
- #work .work-viewport{width:100%;overflow:hidden;position:relative}
- #work #grid{display:flex!important;flex-wrap:nowrap;gap:24px;width:max-content;will-change:transform;transform:translate3d(0,0,0)}
- #work #grid .proj{flex:0 0 clamp(290px,36vw,540px);width:clamp(290px,36vw,540px);max-width:calc(100vw - 48px)}
- #work #grid .proj.hide{display:none!important}
- #work .work-hint{font-size:.8rem;margin-top:10px;opacity:.7}
- #work .work-progress{height:3px;margin-top:18px;background:rgba(120,130,145,.18);border-radius:8px;overflow:hidden}
- #work .work-progress>span{display:block;height:100%;width:100%;background:var(--accent,#ff4b32);transform:scaleX(0);transform-origin:left;will-change:transform}
- #work #grid .proj.motion-item{transition:opacity .6s ease,filter .6s ease,box-shadow .3s ease!important;transform:none!important}
- #work #grid .proj:hover{transform:none!important}
-}
-@media(max-width:768px),(prefers-reduced-motion:reduce){
- #work .work-viewport{overflow:visible}#work .work-progress,#work .work-hint{display:none}
-}
+</style><style id="horizontal-projects-v4">
+/* Sticky section cannot itself clip overflow: that breaks position:sticky. */
+#work.horizontal-work{position:relative;overflow:visible!important;padding-top:0!important;padding-bottom:0!important}
+#work .work-pin{position:sticky!important;top:0;height:100svh;min-height:0;display:flex;align-items:center;overflow:hidden;z-index:2}
+#work .work-pin>.wrap{width:100%;max-width:100%;padding-left:clamp(16px,5vw,72px);padding-right:clamp(16px,5vw,72px)}
+#work .work-viewport{width:100%;overflow:hidden!important;position:relative;touch-action:pan-y}
+#work #grid{display:flex!important;flex-wrap:nowrap!important;gap:clamp(12px,2vw,24px);width:max-content;max-width:none!important;transform:translate3d(0,0,0);will-change:transform}
+#work #grid .proj{flex:0 0 clamp(260px,36vw,510px)!important;width:clamp(260px,36vw,510px)!important;max-width:calc(100vw - 40px)}
+#work #grid .proj.hide{display:none!important}
+#work .work-progress{height:3px;margin-top:15px;background:rgba(120,130,145,.22);border-radius:8px;overflow:hidden}
+#work .work-progress>span{display:block;height:100%;width:100%;background:var(--accent,#ff4b32);transform:scaleX(0);transform-origin:left}
+#work .work-hint{font-size:.78rem;margin-top:9px;opacity:.75}
+#work #grid .proj.motion-item{transition:opacity .6s ease,filter .6s ease,box-shadow .3s ease!important;transform:none!important}
+@media(max-width:768px){#work .work-pin>.wrap{padding-left:16px;padding-right:16px}#work #grid .proj{flex-basis:78vw!important;width:78vw!important}#work .work-pin{height:100svh}#work .work-pin h2{font-size:clamp(1.6rem,7vw,2.8rem)}#work .filters{max-height:80px;overflow-y:auto}}
+@media(prefers-reduced-motion:reduce){#work .work-hint{display:none}}
 </style>
 </head>
 <body>
@@ -541,37 +537,44 @@ updateResumeLink();
  // Ensure that no content stays invisible when navigating back or switching tabs.
  window.addEventListener('pageshow',()=>register());
 })();
-</script><script id="horizontal-projects-controller-v3">
+</script><script id="horizontal-projects-controller-v4">
 (()=>{
- const section=document.getElementById('work'), pin=section?.querySelector('.work-pin');
- const viewport=document.getElementById('workViewport'), track=document.getElementById('grid');
+ const section=document.getElementById('work'),pin=section?.querySelector('.work-pin');
+ const viewport=document.getElementById('workViewport'),track=document.getElementById('grid');
  const bar=document.getElementById('workProgress'),filters=document.getElementById('filters');
  if(!section||!pin||!viewport||!track)return;
- const media=matchMedia('(min-width:769px) and (prefers-reduced-motion:no-preference)');
- let distance=0,scheduled=false;
+ let distance=0,travel=0,frame=0,resizeFrame=0;
+ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+ function update(){
+   frame=0;
+   if(reduced.matches){track.style.transform='';return}
+   const rect=section.getBoundingClientRect();
+   const progress=travel>0?Math.max(0,Math.min(1,-rect.top/travel)):0;
+   track.style.transform=`translate3d(${-distance*progress}px,0,0)`;
+   if(bar)bar.style.transform=`scaleX(${progress})`;
+ }
  function measure(){
-   if(!media.matches){section.style.height='';track.style.transform='';bar?.firstElementChild?.style.setProperty('transform','scaleX(0)');return}
-   // Last card must be fully visible before vertical scrolling resumes.
+   resizeFrame=0;
+   if(reduced.matches){section.style.height='';track.style.transform='';return}
+   /* Reset transform before measuring, so dynamic Supabase cards are included. */
+   track.style.transform='translate3d(0,0,0)';
    distance=Math.max(0,track.scrollWidth-viewport.clientWidth);
-   section.style.height=(Math.max(window.innerHeight,640)+distance)+'px';
+   travel=distance;
+   section.style.height=`${Math.ceil(pin.getBoundingClientRect().height+travel)}px`;
    update();
  }
- function update(){
-   if(!media.matches)return;
-   const maxScroll=Math.max(0,section.offsetHeight-pin.offsetHeight);
-   const progress=maxScroll?Math.min(1,Math.max(0,-section.getBoundingClientRect().top/maxScroll)):0;
-   track.style.transform='translate3d('+(-distance*progress)+'px,0,0)';
-   if(bar?.firstElementChild)bar.firstElementChild.style.transform='scaleX('+progress+')';
- }
- function onScroll(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;update()})}
- window.addEventListener('scroll',onScroll,{passive:true});
- window.addEventListener('resize',measure,{passive:true});
- media.addEventListener?.('change',measure);
- filters?.addEventListener('click',()=>requestAnimationFrame(()=>requestAnimationFrame(measure)));
- new MutationObserver(()=>requestAnimationFrame(measure)).observe(track,{childList:true});
- document.fonts?.ready.then(measure);
- window.addEventListener('load',measure);
- requestAnimationFrame(measure);
+ function scheduleMeasure(){if(!resizeFrame)resizeFrame=requestAnimationFrame(measure)}
+ function scheduleUpdate(){if(!frame)frame=requestAnimationFrame(update)}
+ window.addEventListener('scroll',scheduleUpdate,{passive:true});
+ window.addEventListener('resize',scheduleMeasure,{passive:true});
+ window.addEventListener('orientationchange',scheduleMeasure,{passive:true});
+ filters?.addEventListener('click',()=>requestAnimationFrame(scheduleMeasure));
+ new MutationObserver(scheduleMeasure).observe(track,{childList:true,subtree:false,attributes:true,attributeFilter:['class']});
+ if(window.ResizeObserver){const ro=new ResizeObserver(scheduleMeasure);ro.observe(viewport);ro.observe(track)}
+ document.fonts?.ready.then(scheduleMeasure);
+ window.addEventListener('load',scheduleMeasure);
+ reduced.addEventListener?.('change',scheduleMeasure);
+ scheduleMeasure();
 })();
 </script>
 </body>
