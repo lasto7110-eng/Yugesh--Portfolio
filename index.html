@@ -184,6 +184,29 @@ section{padding:72px 0}}
 #grid .proj.previewing .inline-player{pointer-events:none;opacity:0;animation:previewFade .28s ease forwards}@keyframes previewFade{to{opacity:1}}#grid .inline-player{position:absolute;inset:0;background:#080808;z-index:5;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #grid .inline-player video,#grid .inline-player iframe{width:100%;height:100%;border:0;object-fit:contain;background:#080808}
 #grid .inline-close{position:absolute;right:8px;top:8px;z-index:7;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.85);color:#fff;font-size:25px;line-height:1;cursor:pointer;border:1px solid #ffffff80}
+</style><style id="premium-text-motion">
+/* Premium motion layer: soft editorial reveals, polished hover micro-interactions. */
+:root{--motion-ease:cubic-bezier(.22,1,.36,1)}
+html{scroll-behavior:smooth}
+.rv{opacity:0;transform:translate3d(0,32px,0);filter:blur(5px);transition:opacity .95s var(--motion-ease),transform 1.05s var(--motion-ease),filter .95s var(--motion-ease);transition-delay:var(--reveal-delay,0ms)}
+.rv.in{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+.hero .eyebrow,.hero .lead,.hero .ctas,.hero .meta,.hero .scroll{animation:premiumHeroIn .9s var(--motion-ease) both}
+.hero .eyebrow{animation-delay:.15s}.hero .lead{animation-delay:.43s}.hero .ctas{animation-delay:.55s}.hero .meta{animation-delay:.65s}.hero .scroll{animation-delay:.75s}
+@keyframes premiumHeroIn{from{opacity:0;transform:translate3d(0,18px,0);filter:blur(5px)}to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}}
+h1 span b{transition-duration:1.15s;transition-timing-function:var(--motion-ease)}
+.photo{transition:opacity 1.25s .28s var(--motion-ease),transform 1.35s .28s var(--motion-ease)}
+.card,.proj,.step,.cert,.tool{transition-timing-function:var(--motion-ease);transition-duration:.48s}
+.card:hover,.proj:hover{transform:translate3d(0,-6px,0);box-shadow:0 18px 45px rgba(23,25,28,.095)}
+.pb h3,.card h3,.step h3,.cert h3{transition:color .35s var(--motion-ease),transform .45s var(--motion-ease)}
+.proj:hover .pb h3,.card:hover h3{transform:translateX(3px)}
+.btn,.arrow,.filters button,.tags span,.meta a{transition-timing-function:var(--motion-ease);transition-duration:.4s}
+.btn:active,.filters button:active{transform:scale(.975)}
+#grid .proj .thumb>img{transition:transform .8s var(--motion-ease),opacity .35s ease}
+#grid .proj:hover .thumb>img{transform:scale(1.055)}
+/* Dynamic portfolio items animate on entry without changing filtering or video events. */
+@keyframes premiumCardEnter{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+#grid .proj:not(.hide){animation:premiumCardEnter .65s var(--motion-ease) both;animation-delay:calc(min(var(--card-order,0),8)*65ms)}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.rv{filter:none!important}.hero .eyebrow,.hero .lead,.hero .ctas,.hero .meta,.hero .scroll,#grid .proj:not(.hide){animation:none!important}}
 </style></head>
 <body>
 <div id="pre" aria-hidden="true">YUGESH P<span class="c">.</span></div>
@@ -461,5 +484,5 @@ loadContent().catch(e=>console.error("Portfolio loading failed",e));
 async function updateResumeLink(){if(!db)return;const url=db.storage.from('portfolio-media').getPublicUrl('resume/current.pdf').data.publicUrl;try{const r=await fetch(url,{method:'HEAD',cache:'no-store'});if(!r.ok)return;document.querySelectorAll('a').forEach(a=>{if(a.textContent.includes('Download Resume')){a.href=url+'?v='+Date.now();a.setAttribute('download','Yugesh_Resume.pdf')}})}catch(e){console.warn('Resume check failed',e)}}
 updateResumeLink();
 </script>
-</body>
+<script id="premium-motion-init">(function(){const grid=document.getElementById('grid');if(!grid)return;const assign=()=>grid.querySelectorAll('.proj').forEach((el,i)=>el.style.setProperty('--card-order',i%9));assign();new MutationObserver(assign).observe(grid,{childList:true});})();</script></body>
 </html>
