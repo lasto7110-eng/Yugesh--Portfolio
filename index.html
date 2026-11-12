@@ -240,6 +240,44 @@ html.motion-ready .motion-item.motion-visible:hover{transition-delay:0ms}
 @media(max-width:768px){#work .work-pin>.wrap{padding-left:16px;padding-right:16px}#work #grid .proj{flex-basis:78vw!important;width:78vw!important}#work .work-pin{height:100svh}#work .work-pin h2{font-size:clamp(1.6rem,7vw,2.8rem)}#work .filters{max-height:80px;overflow-y:auto}}
 @media(prefers-reduced-motion:reduce){#work .work-hint{display:none}}
 </style>
+<style>
+/* Certificate CTA: refined premium blue hover, without changing viewer logic */
+#certs .cert-card-info .cert-open{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  width:max-content;max-width:100%;position:relative;isolation:isolate;
+  padding:11px 15px!important;border:1px solid rgba(57,108,224,.22)!important;
+  border-radius:999px!important;background:rgba(57,108,224,.045)!important;
+  color:#263d6d!important;font-family:inherit!important;font-size:12px!important;
+  font-weight:700!important;line-height:1.3!important;text-decoration:none!important;
+  cursor:pointer;overflow:hidden;
+  transition:color .32s ease,background .32s ease,border-color .32s ease,
+    box-shadow .32s ease,transform .32s cubic-bezier(.2,.8,.2,1);
+}
+#certs .cert-card-info .cert-open::before{
+  content:"";position:absolute;inset:0;background:#2563eb;z-index:-1;
+  transform:translateY(102%);transition:transform .38s cubic-bezier(.22,1,.36,1);
+}
+#certs .cert-card-info .cert-open .cert-open-arrow{
+  display:inline-block;font-size:16px;line-height:1;
+  transition:transform .32s cubic-bezier(.2,.8,.2,1);
+}
+#certs .cert-card-info .cert-open:hover,
+#certs .cert-card-info .cert-open:focus-visible{
+  color:#fff!important;border-color:#2563eb!important;
+  box-shadow:0 9px 22px rgba(37,99,235,.24);transform:translateY(-3px);
+}
+#certs .cert-card-info .cert-open:hover::before,
+#certs .cert-card-info .cert-open:focus-visible::before{transform:translateY(0)}
+#certs .cert-card-info .cert-open:hover .cert-open-arrow,
+#certs .cert-card-info .cert-open:focus-visible .cert-open-arrow{transform:translate(3px,-3px)}
+#certs .cert-card-info .cert-open:focus-visible{outline:2px solid #60a5fa;outline-offset:3px}
+#certs .cert-card-info .cert-open:active{transform:translateY(-1px) scale(.98)}
+#certs .cert-card h3{margin-top:0!important}
+@media(prefers-reduced-motion:reduce){
+ #certs .cert-card-info .cert-open,#certs .cert-card-info .cert-open::before,
+ #certs .cert-card-info .cert-open .cert-open-arrow{transition:none!important}
+}
+</style>
 </head>
 <body>
 <div id="pre" aria-hidden="true">YUGESH P<span class="c">.</span></div>
@@ -557,7 +595,7 @@ async function loadContent(){
    const image=safeURL(x.image_url),link=safeURL(x.video_url)||image;
    const isPdf=/\.pdf(?:[?#]|$)/i.test(link)||/drive\.google\.com\//i.test(link);
    const preview=isPdf?`<div class="cert-pdf-preview" data-pdf="${escapeHTML(link)}"><div class="cert-preview-loading">Loading certificate…</div></div>`:image?`<img src="${escapeHTML(image)}" alt="${escapeHTML(x.title)}" loading="lazy" onerror="this.style.display='none'">`:`<div class="cert-pdf-fallback">CERTIFICATE</div>`;
-   return `<article class="cert-card"><div class="cert-card-preview">${preview}</div><div class="cert-card-info"><span class="cert-type">${isPdf?'PDF CERTIFICATE':'CERTIFICATE'}</span><h3>${escapeHTML(x.title)}</h3>${x.description?`<p>${escapeHTML(x.description)}</p>`:''}<button type="button" class="cert-open" data-url="${escapeHTML(link)}" data-title="${escapeHTML(x.title)}">View Certificate ↗</button></div></article>`;
+   return `<article class="cert-card"><div class="cert-card-preview">${preview}</div><div class="cert-card-info"><h3>${escapeHTML(x.title)}</h3>${x.description?`<p>${escapeHTML(x.description)}</p>`:''}<button type="button" class="cert-open" data-url="${escapeHTML(link)}" data-title="${escapeHTML(x.title)}"><span class="cert-open-label">View Certificate</span><span class="cert-open-arrow" aria-hidden="true">↗</span></button></div></article>`;
   }).join('');
   document.getElementById('certEmpty').hidden=entries.length>0;
   renderCertificatePreviews(certTrack);
