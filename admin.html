@@ -6,23 +6,30 @@
 </style><style id="certificate-pointer-sort-fix">
 .sort-handle{display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:42px;border-radius:10px;background:#edf3ff;color:#2563eb;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;flex-shrink:0}
 .sort-handle:active{cursor:grabbing;background:#dbeafe}.sortable-cert{touch-action:pan-y}.sortable-cert.sort-moving{background:#eaf1ff;box-shadow:0 8px 25px #1e40af22;outline:2px solid #93c5fd}.sortable-cert.sort-target{border-top:3px solid #2563eb}
+</style><style id="project-group-sidebar-v1">
+.nav-group{margin:8px 0 5px}.nav-parent{display:flex;align-items:center;justify-content:space-between;font-weight:800;color:#263b63;background:#f5f8ff}.nav-parent .nav-chevron{font-size:18px;transition:transform .22s}.nav-parent[aria-expanded="false"] .nav-chevron{transform:rotate(-90deg)}.nav-parent.has-active{background:#eaf1ff;color:#1d4ed8}.nav-subitems{padding:4px 0 6px 12px;margin-left:17px;border-left:2px solid #e3eaf6;display:flex;flex-direction:column;gap:2px}.nav-subitems[hidden]{display:none!important}.nav-child{padding:11px 12px!important;margin:0!important;font-size:12px!important}.nav-child.active{background:#eaf1ff!important}.nav-group .nav-parent:hover{transform:none}
+@media(max-width:820px){#adminNav{align-items:flex-start}.nav-group{flex:0 0 auto;margin:0}.nav-parent{width:150px}.nav-subitems{display:flex;flex-direction:column;max-height:320px;overflow:auto;min-width:168px}.nav-child{width:100%;white-space:nowrap}}
 </style></head><body>
 <header><h1>Yugesh <span class="accent">Admin</span></h1><button id="logout" class="secondary hide">Log out</button></header>
 <main class="wrap"><section id="loginPanel" class="panel"><h2>Admin login</h2><form id="loginForm"><label>Email</label><input id="email" type="email" autocomplete="username" required><label>Password</label><input id="password" type="password" autocomplete="current-password" required><p><button type="submit">Sign in</button></p></form><p id="loginMsg" class="msg" role="status"></p></section>
 <section id="dashboard" class="hide admin-layout">
 <aside class="admin-sidebar"><div class="sidebar-kicker">CONTENT STUDIO</div><div class="sidebar-heading">Dashboard</div><nav id="adminNav" aria-label="Dashboard sections">
 <button type="button" class="nav-item active" data-section="overview">◫ &nbsp; Overview</button>
-<button type="button" class="nav-item" data-section="video">▣ &nbsp; Video Editing</button>
-<button type="button" class="nav-item" data-section="graphic_design">▧ &nbsp; Graphic Design</button>
-<button type="button" class="nav-item" data-section="event_posters">▤ &nbsp; Event Posters</button>
-<button type="button" class="nav-item" data-section="social_media">◈ &nbsp; Social Media</button>
-<button type="button" class="nav-item" data-section="ai_projects">✦ &nbsp; AI Projects</button>
+<div class="nav-group">
+<button type="button" id="projectsNavToggle" class="nav-item nav-parent" aria-expanded="true" aria-controls="projectSegments"><span>▦ &nbsp; Projects</span><span class="nav-chevron" aria-hidden="true">⌄</span></button>
+<div id="projectSegments" class="nav-subitems">
+<button type="button" class="nav-item nav-child" data-section="video">▣ &nbsp; Video Editing</button>
+<button type="button" class="nav-item nav-child" data-section="graphic_design">▧ &nbsp; Graphic Design</button>
+<button type="button" class="nav-item nav-child" data-section="event_posters">▤ &nbsp; Event Posters</button>
+<button type="button" class="nav-item nav-child" data-section="social_media">◈ &nbsp; Social Media</button>
+<button type="button" class="nav-item nav-child" data-section="ai_projects">✦ &nbsp; AI Projects</button>
+<button type="button" class="nav-item nav-child" data-section="project">▦ &nbsp; Legacy Projects</button>
+</div></div>
 <button type="button" class="nav-item" data-section="certificate">♧ &nbsp; Certificates</button>
-<button type="button" class="nav-item" data-section="project">▦ &nbsp; Legacy Projects</button>
 <button type="button" class="nav-item" data-section="resume">▤ &nbsp; Resume</button>
 </nav><a class="admin-site-link" href="index.html" target="_blank" rel="noopener">View live portfolio ↗</a></aside>
 <div class="admin-main"><div class="admin-topline"><div><div class="sidebar-kicker">YUGESH / ADMIN PANEL</div><h2 id="sectionHeading">Overview</h2><p id="sectionSubheading" class="muted">Manage your creative portfolio in one place.</p></div><span class="admin-live-dot">Supabase connected</span></div>
-<div id="overviewPanel" class="overview-panel"><div class="stat-grid" id="adminStats"></div><div class="overview-intro"><strong>Quick actions</strong><p>Choose a section to upload, edit or manage content without searching through a long page.</p><div class="quick-actions"><button type="button" data-jump="video">Add video</button><button type="button" data-jump="graphic_design">Add design</button><button type="button" data-jump="certificate">Add certificate</button><button type="button" data-jump="resume">Update resume</button></div></div></div>
+<div id="overviewPanel" class="overview-panel"><div class="stat-grid" id="adminStats"></div><div class="overview-intro"><strong>Quick actions</strong><p>Open Projects in the sidebar, select a segment, then upload, edit or reorder items in that segment.</p><div class="quick-actions"><button type="button" data-jump="video">Add video</button><button type="button" data-jump="graphic_design">Add design</button><button type="button" data-jump="certificate">Add certificate</button><button type="button" data-jump="resume">Update resume</button></div></div></div>
 <div id="contentEditorPanel" class="panel admin-content-panel hide"><h2 id="formTitle">Add portfolio content</h2><p class="muted">Manage content in the selected sidebar section. Certificate thumbnails are generated from PDFs automatically.</p><form id="itemForm"><input id="editId" type="hidden"><div id="categoryField" class="hide"><label>Type</label><select id="category"><option value="video">Video Editing</option><option value="graphic_design">Graphic Design</option><option value="event_posters">Event Posters</option><option value="social_media">Social Media</option><option value="ai_projects">AI Projects</option><option value="certificate">Certificate</option><option value="project">Legacy Project</option></select></div><label>Title</label><input id="title" maxlength="150" required><label>Description</label><textarea id="description"></textarea><div id="imageFields"><label>Image / thumbnail upload (50 MB maximum)</label><input id="imageFile" type="file" accept="image/*"><small>Upload a new image, or keep the existing one when editing.</small><label>Image URL (optional)</label><input id="imageUrl" type="url" placeholder="https://..."></div><div id="videoOptions" class="hide"><label>Video source</label><select id="videoSource"><option value="mp4">Direct MP4 Upload</option><option value="youtube">YouTube Link</option><option value="instagram">Instagram Link</option><option value="drive">Google Drive Link</option></select><div id="mp4Options"><label>MP4 file (maximum 50 MB)</label><input id="videoFile" type="file" accept="video/mp4,.mp4"><small>Large files may need a higher Supabase Storage upload limit.</small></div></div><div id="certificatePdfOptions" class="hide"><label>Certificate PDF upload (maximum 50 MB)</label><input id="certificatePdfFile" type="file" accept="application/pdf,.pdf"><small>Upload your certificate PDF directly, or paste a public Google Drive PDF link below. Set Drive sharing to Anyone with the link → Viewer.</small></div><label id="urlLabel">Video URL or certificate link (optional)</label><input id="videoUrl" type="url" placeholder="https://..."><p id="videoHint" class="muted"></p><p class="flex"><button id="saveBtn" type="submit">Save content</button><button id="cancelEdit" type="button" class="outline">Clear / Cancel edit</button></p></form><p id="saveMsg" class="msg" role="status"></p></div><div id="resumePanel" class="panel hide"><h2>Manage Resume</h2><p class="muted">Upload a PDF to update the Download Resume button on your website.</p><label>Resume PDF (maximum 10 MB)</label><input id="resumeFile" type="file" accept="application/pdf,.pdf"><p class="flex"><button id="resumeBtn" type="button">Upload / Replace Resume</button><a id="resumePreview" class="hide" target="_blank" rel="noopener noreferrer" style="align-self:center">View current resume ↗</a></p><p id="resumeMsg" class="msg" role="status"></p></div><div id="contentListPanel" class="panel hide"><div class="list-head"><h2 id="manageHeading">Manage content</h2><span id="visibleCount" class="muted"></span></div><p id="orderHint" class="muted hide">☰ Drag items to reorder within this section. You can also use ↑ / ↓ buttons. Order saves automatically and updates the public website.</p><div id="orderStatus" class="msg" role="status"></div><div id="items">Loading...</div></div><p class="muted">Changes are stored in Supabase. Only the configured admin account can write data. Your existing hardcoded portfolio entries remain on the website.</p></div></section></main>
 <script id="admin-dashboard-router">
 (function(){
@@ -30,6 +37,12 @@
  let active='overview';
  function navigate(section){active=names[section]?section:'overview';const editing=active!=='overview'&&active!=='resume';
  document.querySelectorAll('.nav-item').forEach(b=>{const on=b.dataset.section===active;b.classList.toggle('active',on);b.setAttribute('aria-current',on?'page':'false')});
+ const projectSections=['video','graphic_design','event_posters','social_media','ai_projects','project'];
+ const isProject=projectSections.includes(active);
+ const parent=document.getElementById('projectsNavToggle');
+ parent.classList.toggle('has-active',isProject);
+ if(isProject){parent.setAttribute('aria-expanded','true');document.getElementById('projectSegments').hidden=false;}
+
  document.getElementById('sectionHeading').textContent=names[active];
  document.getElementById('sectionSubheading').textContent=active==='overview'?'Your content at a glance.':active==='resume'?'Upload and manage your latest resume PDF.':`Add and manage ${names[active].toLowerCase()} content.`;
  for(const [id,on] of [['overviewPanel',active==='overview'],['contentEditorPanel',editing],['contentListPanel',editing],['resumePanel',active==='resume']])document.getElementById(id).classList.toggle('hide',!on);
@@ -37,7 +50,10 @@
  window.dispatchEvent(new CustomEvent('admin-section-change',{detail:{section:active}}));
  }
  window.adminNavigate=navigate;window.adminSection=()=>active;
- document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('[data-section]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.section)));document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.jump)));navigate('overview')});
+ document.addEventListener('DOMContentLoaded',()=>{
+ const toggle=document.getElementById('projectsNavToggle');
+ toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));document.getElementById('projectSegments').hidden=!open;});
+ document.querySelectorAll('[data-section]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.section)));document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.jump)));navigate('overview')});
 })();
 </script>
 <script type="module">
