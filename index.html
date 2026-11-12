@@ -435,7 +435,61 @@ html.motion-ready .motion-item.motion-visible:hover{transition-delay:0ms}
 #dlg .case-study .case-cta{display:inline-flex;margin-top:20px;padding:13px 20px;background:#2563eb;color:white;text-decoration:none;border-radius:50px}
 @media(max-width:700px){#showreel{padding:48px 0}#showreel .showreel-frame{border-radius:14px}#showreel .showreel-play span{width:64px;height:64px}}
 @media(prefers-reduced-motion:reduce){#home .hero>div:first-child,#home .hero .photo,#home .hero .creative-role,#home .hero .ctas a{transition:none!important;translate:none!important}}
-</style></head>
+</style><style id="ashley-inspired-redesign-v1">
+/* Original Ashley-inspired editorial design, preserving original data/DOM contracts. */
+:root{--background:#0b0c0f;--surface:#15161b;--charcoal:#f3f0e9;--steel-grey:#979aa6;--coral:#d5ff4c;--body-text:#c0c1c6;--border:#32343b}
+html{background:#0b0c0f}body{background:#0b0c0f;color:var(--body-text)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.18;background-image:radial-gradient(#8b8e95 .6px,transparent .6px);background-size:7px 7px;mask-image:linear-gradient(to bottom,transparent,#000 50%,transparent)}
+::selection{background:#d5ff4c;color:#0b0c0f}
+.wrap{max-width:1440px;padding-left:clamp(22px,5vw,80px);padding-right:clamp(22px,5vw,80px)}
+section{padding-top:clamp(90px,11vw,170px);padding-bottom:clamp(90px,11vw,170px)}
+h1,h2,h3{color:#f3f0e9;letter-spacing:-.065em}h2{font-size:clamp(2.8rem,7.3vw,7.7rem);line-height:.99;margin-bottom:50px;max-width:1100px}h2 .c{color:#d5ff4c}
+.label{color:#d5ff4c;letter-spacing:.22em;font-size:.7rem;margin-bottom:28px}
+nav{background:rgba(10,11,14,.86);border-bottom:1px solid #33343b;backdrop-filter:blur(22px)}
+nav .wrap{height:82px}.brand{color:#f3f0e9;font-size:1.25rem;letter-spacing:-.05em}.menu a{color:#d2d1d0}.menu a:hover{color:#d5ff4c}.menu a::after{background:#d5ff4c}
+#bar{background:#d5ff4c}
+#home{position:relative;isolation:isolate;min-height:calc(100svh - 82px);display:flex;align-items:center;padding:60px 0 90px;overflow:hidden;background:radial-gradient(ellipse at 82% 50%,rgba(213,255,76,.09),transparent 45%),#0b0c0f}
+#home::before{content:"Y / P";position:absolute;right:-.05em;top:0;font:800 clamp(15rem,36vw,44rem)/1 Manrope,sans-serif;letter-spacing:-.12em;color:rgba(255,255,255,.025);z-index:-1;pointer-events:none}
+#home .hero{grid-template-columns:minmax(0,1.32fr) minmax(280px,.68fr);gap:clamp(25px,5vw,80px);position:relative;align-items:center}
+#home .hero>div:first-child{position:relative;z-index:2;min-width:0}
+#home .eyebrow{color:#d5ff4c;letter-spacing:.24em;font-size:.69rem;margin-bottom:32px}
+#home h1{font-size:clamp(3.5rem,8.4vw,10rem);line-height:.87;letter-spacing:-.085em;margin-bottom:36px;text-transform:uppercase;overflow:visible}
+#home h1 span{overflow:visible;padding:0 0 .13em;margin-bottom:-.13em}
+#home h1 span b{font-weight:800;display:inline-block;transform:translateY(115%);clip-path:inset(0 0 100% 0)}
+.go #home h1 span b{transform:translateY(0);clip-path:inset(0 0 0 0);transition:transform 1.2s cubic-bezier(.18,1,.25,1),clip-path 1.2s cubic-bezier(.18,1,.25,1)}
+#home h1 .c{color:#d5ff4c}#home .lead{max-width:550px;color:#c4c3c0;font-size:clamp(.95rem,1.35vw,1.13rem);line-height:1.8}
+#home .photo{position:relative;transform-style:preserve-3d;will-change:transform}
+#home .photo::before{content:"";position:absolute;inset:8%;border:1px solid rgba(213,255,76,.33);border-radius:50%;transform:scale(1.17);pointer-events:none}
+#home .photo::after{content:"SELECTED CREATIVE / 2026";position:absolute;bottom:0;right:0;font:600 .58rem Manrope;letter-spacing:.24em;color:#d5ff4c;writing-mode:vertical-rl;pointer-events:none}
+#home .photo img{filter:grayscale(.7) contrast(1.1);border-radius:50%;max-width:560px;mask-image:radial-gradient(ellipse at center,#000 53%,transparent 73%)}
+#home .meta{color:#9699a2}#home .meta a{color:#d5ff4c}
+#home .scroll{color:#a7a8ae;letter-spacing:.14em;text-transform:uppercase;font-size:.7rem}
+#home .scroll i{border-color:#d5ff4c}
+.btn{border-radius:2px;border:1px solid #d5ff4c;color:#d5ff4c;text-transform:uppercase;font-size:.72rem;letter-spacing:.1em;padding:17px 23px}
+.btn.fill{background:#d5ff4c;color:#111216}.btn:hover,.btn.fill:hover{background:#f3f0e9;border-color:#f3f0e9;color:#101114;box-shadow:none}
+.cards3{gap:1px;background:#33343b;border:1px solid #33343b;border-radius:0;overflow:hidden}.cards3 .card,.card{border-radius:0;background:#15161b;border-color:#33343b}.card:hover{background:#1d1e23}
+#about{background:#f0eee7;color:#303137}#about h2,#about h3{color:#17181b}#about .label{color:#5e6b29}#about .c{color:#677c13}#about .tags span{border-color:#a6a7a2;color:#303137}
+#services{background:#111216}#services .premium-service,#services .service-card{background:#191a1f;border-color:#36383e}
+#experience{background:#101114}
+#showreel{background:#0b0c0f!important}#showreel .showreel-frame{border-radius:0;border:1px solid #34363b}#showreel h2{color:#f3f0e9}
+#work{background:#101114}#work .label{color:#d5ff4c}#work .work-pin{background:#101114}
+#work .filters button{border-radius:2px}#work .filters button.on{background:#d5ff4c!important;color:#101114!important;border-color:#d5ff4c!important}
+#work .proj{background:#1b1c21;border:1px solid #3b3c42;border-radius:0;color:#c7c8ca;box-shadow:none}
+#work .proj h3{color:#f1efe9}#work .proj:hover{box-shadow:0 28px 65px rgba(0,0,0,.4)}#work .thumb{background:#24252a;border-color:#3b3c42}#work .thumb img{filter:saturate(.85);transition:transform .7s cubic-bezier(.2,.8,.2,1),filter .7s}#work .proj:hover .thumb img{transform:scale(1.055);filter:saturate(1.1)}
+#skills.dark-s{background:#d5ff4c;color:#1a1c14}#skills h2,#skills h3{color:#11140b}#skills .label{color:#384617}#skills .tool{color:#1c2112}#skills .tool:hover{background:rgba(0,0,0,.06)}#skills .tg h3{border-color:rgba(0,0,0,.25)}
+#certs{background:#0d0e11}#certs .cert-pin{background:#0d0e11}#certs .label{color:#d5ff4c}
+#contact{background:#f0eee7;color:#303137}#contact h2,#contact h3{color:#151619}#contact .label{color:#607522}#contact .c{color:#637c11}#contact .btn.fill{background:#17191c;color:#f0eee7;border-color:#17191c}#contact .btn{color:#17191c;border-color:#17191c}#contact .btn:hover{background:#d5ff4c;border-color:#17191c;color:#17191c}
+#contact input,#contact textarea,#contact select{background:rgba(255,255,255,.58);color:#17191c;border-color:#9fa09d}#contact .ci a{color:#17191c}
+.ashley-rail{position:absolute;right:clamp(16px,4vw,65px);top:42%;z-index:1;writing-mode:vertical-rl;font:600 .62rem Manrope,sans-serif;letter-spacing:.26em;color:#888c8d;pointer-events:none}
+.ashley-stamp{display:inline-flex;align-items:center;gap:10px;color:#c9c9c6;font:600 .7rem Manrope;letter-spacing:.15em;text-transform:uppercase;margin-bottom:20px}.ashley-stamp::before{content:"";width:8px;height:8px;background:#d5ff4c;border-radius:50%;box-shadow:0 0 20px #d5ff4c}
+.ashley-divider{height:1px;background:linear-gradient(90deg,#d5ff4c,rgba(213,255,76,0));margin:30px 0 28px;max-width:520px}
+.ashley-reveal{opacity:0;translate:0 65px;filter:blur(5px);transition:opacity .9s ease,translate 1.15s cubic-bezier(.16,1,.3,1),filter .9s ease}
+.ashley-reveal.ashley-visible{opacity:1;translate:0 0;filter:none}
+@media(max-width:900px){#home .hero{grid-template-columns:1fr 0.65fr}#home h1{font-size:clamp(3.4rem,9vw,6rem)}.ashley-rail{display:none}}
+@media(max-width:680px){nav .wrap{height:68px}#home{min-height:auto;padding:74px 0 70px}#home .hero{grid-template-columns:1fr;gap:20px}#home h1{font-size:clamp(3.25rem,12.5vw,6rem);margin-bottom:22px}#home .photo{max-width:330px;width:75%;margin:10px auto 0}#home .photo::after{right:-15px}#home .lead{font-size:.95rem}h2{font-size:clamp(2.5rem,11vw,4.3rem)}section{padding-top:90px;padding-bottom:90px}.wrap{padding-left:22px;padding-right:22px}}
+@media(prefers-reduced-motion:reduce){.ashley-reveal{opacity:1;translate:none;filter:none;transition:none}#home h1 span b{clip-path:none!important;transform:none!important}}
+</style>
+</head>
 <body>
 <div id="pre" class="cinematic-intro" role="status" aria-label="Opening Yugesh portfolio">
   <div class="cinematic-aura" aria-hidden="true"></div>
@@ -1178,5 +1232,33 @@ updateResumeLink();
  // The existing Supabase UMD client is declared later; wait for the DOM ready event.
  window.addEventListener('load',()=>{if(typeof db!=='undefined')window.db=db;loadShowreel().catch(console.warn)},{once:true});
 })();
-</script></body>
+</script><script id="ashley-inspired-motion-v1">
+(()=>{
+ const home=document.getElementById('home');
+ if(!home)return;
+ const hero=home.querySelector('.hero');
+ const heading=hero?.querySelector('h1');
+ if(heading&&!hero.querySelector('.ashley-stamp')){
+  const stamp=document.createElement('span');stamp.className='ashley-stamp';stamp.textContent='Independent creative portfolio';heading.before(stamp);
+  const line=document.createElement('div');line.className='ashley-divider';heading.after(line);
+ }
+ const rail=document.createElement('div');rail.className='ashley-rail';rail.textContent='DESIGN / MOTION / STORYTELLING';home.appendChild(rail);
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(!reduced&&matchMedia('(pointer:fine)').matches){
+  const photo=home.querySelector('.photo');let raf=0;
+  home.addEventListener('pointermove',e=>{
+   if(raf)return;raf=requestAnimationFrame(()=>{raf=0;const r=home.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    if(photo)photo.style.translate=(x*-12).toFixed(1)+'px '+(y*-12).toFixed(1)+'px';
+   });
+  },{passive:true});
+  home.addEventListener('pointerleave',()=>{if(photo)photo.style.translate='0 0'},{passive:true});
+ }
+ const targets=[...document.querySelectorAll('#services h2,#experience h2,#showreel h2,#contact h2')];
+ if(!reduced&&'IntersectionObserver'in window){
+  const io=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('ashley-visible');io.unobserve(entry.target)}})},{threshold:.08});
+  targets.forEach(el=>{el.classList.add('ashley-reveal');io.observe(el)});
+ }else targets.forEach(el=>el.classList.add('ashley-visible'));
+})();
+</script>
+</body>
 </html>
