@@ -309,6 +309,28 @@ html.motion-ready .motion-item.motion-visible:hover{transition-delay:0ms}
  #work #grid .proj,#certs .cert-card{transition:none!important}
 }
 </style>
+
+<style id="premium-blue-glow-boost-v2">
+/* Stronger, clearly visible but refined blue aura on hover. */
+@media (hover:hover) and (pointer:fine){
+ #work #grid .proj:hover,
+ #certs .cert-card:hover{
+  position:relative!important;z-index:20!important;
+  border-color:rgba(59,130,246,.88)!important;
+  box-shadow:0 0 0 1.5px rgba(96,165,250,.85),
+    0 0 18px 5px rgba(59,130,246,.48),
+    0 0 48px 14px rgba(37,99,235,.36),
+    0 26px 72px 5px rgba(25,75,195,.30)!important;
+  filter:drop-shadow(0 0 15px rgba(59,130,246,.35))!important;
+ }
+ #work #grid .proj.project-reveal-shown:hover{
+  translate:0 -12px!important;scale:1.03!important;
+ }
+}
+@media (prefers-reduced-motion:reduce){
+ #work #grid .proj:hover,#certs .cert-card:hover{transition:none!important}
+}
+</style>
 </head>
 <body>
 <div id="pre" aria-hidden="true">YUGESH P<span class="c">.</span></div>
