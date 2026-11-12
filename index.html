@@ -334,7 +334,7 @@ const tools={
  "AI Tools":[["Google Flow"],["ChatGPT"],["Claude"],["Gemini"]],
  "Additional Skills":[["Digital Marketing"],["Social Media Content Planning"],["UI/UX Fundamentals"],["Microsoft Office"]]};
 const steps=[["IDEA","Creative Ideation"],["CONCEPT","AI-Assisted Concept Development"],["CREATE","Video Editing & Graphic Production"],["REFINE","Final Content Delivery"]];
-const cats=["All Projects","Video Editing","Graphic Design","Event Posters","Social Media","AI Projects"];
+const cats=[];
 const photo=SITE.photo&&!SITE.photo.startsWith("__")?`<img src="${SITE.photo}" alt="Portrait of Yugesh P with CapCut, Canva, ChatGPT and Google Flow icons" width="1254" height="1254" fetchpriority="high">`:`<div class="ph">Add your portrait at SITE.photo</div>`;
 $("#app").innerHTML=`
 <section id="home"><div class="wrap"><div class="hero">
@@ -388,7 +388,7 @@ $("#app").innerHTML=`
 <section id="work" class="horizontal-work" style="padding-top:24px"><div class="work-pin"><div class="wrap">
 <span class="label">Selected work</span><h2>My creative <span class="c">portfolio.</span></h2>
 <div class="filters" id="filters" role="group" aria-label="Filter projects">${cats.map((c,i)=>`<button data-c="${c}" class="${i?'':'on'}" aria-pressed="${!i}">${c}</button>`).join("")}</div>
-<div class="work-viewport" id="workViewport"><div class="grid" id="grid">${SITE.projects.map((p,i)=>`<button class="proj" data-i="${i}" data-c="${p.c}" aria-label="Open ${p.t}"><div class="thumb">${p.image?`<img src="${p.image}" alt="${p.t}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:`<div class="in">Project ${String(i+1).padStart(2,"0")}</div>`}${p.image||p.video?"":'<span class="badge">Editable example</span>'}${p.video?'<span class="inline-play" aria-hidden="true">▶</span>':''}</div><div class="pb"><div><div class="cat">${p.c}</div><h3>${p.t}</h3></div>${ar}<p>${p.d}</p></div></button>`).join("")}</div>
+<div class="work-viewport" id="workViewport"><div class="grid" id="grid">${[].map((p,i)=>`<button class="proj" data-i="${i}" data-c="${p.c}" aria-label="Open ${p.t}"><div class="thumb">${p.image?`<img src="${p.image}" alt="${p.t}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:`<div class="in">Project ${String(i+1).padStart(2,"0")}</div>`}${p.image||p.video?"":'<span class="badge">Editable example</span>'}${p.video?'<span class="inline-play" aria-hidden="true">▶</span>':''}</div><div class="pb"><div><div class="cat">${p.c}</div><h3>${p.t}</h3></div>${ar}<p>${p.d}</p></div></button>`).join("")}</div>
 <div class="work-progress" aria-hidden="true"><span id="workProgress"></span></div><p class="work-hint">Scroll down to explore projects horizontally · Continue scrolling for the next section</p><p style="margin-top:10px;font-size:.78rem">These are placeholders, not verified completed projects. Add real media in the SITE data at the top of this file.</p>
 </div></div></div></section>
 
@@ -576,17 +576,28 @@ async function loadContent(){
  if(!db)return;
  const {data,error}=await db.from('portfolio_items').select('*').order('created_at',{ascending:false});
  if(error){console.warn('Portfolio content unavailable',error.message);return}
- if(!data?.length)return;
- console.info('Portfolio items loaded:',data.length);
- const categoryMap={video:'Video Editing',project:'Graphic Design',graphic_design:'Graphic Design',event_posters:'Event Posters',social_media:'Social Media',ai_projects:'AI Projects'};
- const projects=data.filter(x=>Object.hasOwn(categoryMap,x.category));
- const certs=data.filter(x=>x.category==='certificate');
+ const items=data||[];
+ console.info('Portfolio items loaded:',items.length);
+ const {data:categoryData,error:categoryError}=await db.from('project_categories').select('name,slug,sort_order').order('sort_order',{ascending:true});
+ if(categoryError){console.warn('Project categories unavailable. Run setup SQL:',categoryError.message)}
+ const categoryMap=Object.fromEntries((categoryData||[]).map(c=>[c.slug,c.name]));
+ const filters=document.getElementById('filters');
+ if(filters){
+  const labels=['All Projects',...(categoryData||[]).map(c=>c.name)];
+  filters.innerHTML=labels.map((name,i)=>`<button data-c="${escapeHTML(name)}" class="${i?'':'on'}" aria-pressed="${!i}">${escapeHTML(name)}</button>`).join('');
+ }
+ const projects=items.filter(x=>Object.hasOwn(categoryMap,x.category));
+ const certs=items.filter(x=>x.category==='certificate');
  if(projects.length){
   const grid=document.querySelector('#grid');
-  const originalCount=SITE.projects.length;
+  SITE.projects.length=0;
+  const originalCount=0;
   SITE.projects.push(...projects.map(x=>({t:x.title,c:categoryMap[x.category],d:x.description||'',obj:x.description||'',tools:'',image:safeURL(x.image_url),video:safeURL(x.video_url),link:''})));
+  grid.replaceChildren();
   grid.insertAdjacentHTML('afterbegin',projects.map((x,i)=>{const p=SITE.projects[originalCount+i];return `<button class="proj" data-i="${originalCount+i}" data-c="${escapeHTML(p.c)}" aria-label="Open ${escapeHTML(p.t)}"><div class="thumb">${p.image?`<img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.t)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:`<div class="in">${p.video?'Watch video':'New project'}</div>`}${p.video?'<span class="inline-play" aria-hidden="true">▶</span>':''}</div><div class="pb"><div><div class="cat">${escapeHTML(p.c)}</div><h3>${escapeHTML(p.t)}</h3></div>${p.video?'<span class="inline-arrow" aria-hidden="true">↗</span>':''}<p>${escapeHTML(p.d)}</p></div></button>`}).join(''));
  }
+ if(!projects.length){document.getElementById('grid').innerHTML='<p class="muted">Projects will appear here after you create categories and upload content.</p>'}
+ window.dispatchEvent(new Event('projects-updated'));
  const certTrack=document.getElementById('certTrack');
  if(certTrack){
   certTrack.replaceChildren();
