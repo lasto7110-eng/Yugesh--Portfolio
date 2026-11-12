@@ -730,5 +730,29 @@ updateResumeLink();
  close.addEventListener('click',hide);addEventListener('keydown',e=>{if(e.key==='Escape'&&!viewer.hidden)hide()});
 })();
 </script>
+
+<style id="cert-cinematic-motion">
+#certs .cert-card{transform-origin:center center;transition:transform .52s cubic-bezier(.2,.8,.2,1),box-shadow .52s ease,filter .4s ease;will-change:transform}
+#certs .cert-card:hover{transform:translateY(-13px) scale(1.045)!important;box-shadow:0 28px 60px rgba(26,47,87,.19)!important;z-index:5;position:relative}
+#certs .cert-card .cert-card-preview{overflow:hidden}
+#certs .cert-card .cert-card-preview canvas,#certs .cert-card .cert-card-preview img{transition:transform .65s cubic-bezier(.2,.8,.2,1)}
+#certs .cert-card:hover .cert-card-preview canvas,#certs .cert-card:hover .cert-card-preview img{transform:scale(1.065)}
+#certs .cert-card.cert-enter{animation:certPopReveal .7s cubic-bezier(.18,.85,.25,1) both;animation-delay:var(--cert-delay,0ms)}
+@keyframes certPopReveal{from{opacity:.35;filter:blur(5px);translate:0 32px;scale:.94}to{opacity:1;filter:blur(0);translate:0 0;scale:1}}
+@media(prefers-reduced-motion:reduce){#certs .cert-card,#certs .cert-card *{animation:none!important;transition:none!important;transform:none!important}}
+</style>
+<script id="cert-cinematic-motion-js">
+(()=>{
+ const track=document.getElementById('certTrack');if(!track)return;
+ const revealed=new WeakSet();let frame=0;
+ function update(){frame=0;const cards=[...track.querySelectorAll('.cert-card')];const vw=innerWidth;
+  cards.forEach((card,i)=>{if(revealed.has(card))return;const r=card.getBoundingClientRect();if(r.left<vw*.93&&r.right>vw*.05){revealed.add(card);card.style.setProperty('--cert-delay',Math.min(i%3,2)*85+'ms');card.classList.add('cert-enter')}});
+ }
+ function schedule(){if(!frame)frame=requestAnimationFrame(update)}
+ addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule,{passive:true});
+ addEventListener('certificates-updated',()=>{setTimeout(schedule,80);setTimeout(schedule,500)});
+ if('MutationObserver'in window)new MutationObserver(schedule).observe(track,{childList:true});schedule();
+})();
+</script>
 </body>
 </html>
