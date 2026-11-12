@@ -278,6 +278,37 @@ html.motion-ready .motion-item.motion-visible:hover{transition-delay:0ms}
  #certs .cert-card-info .cert-open .cert-open-arrow{transition:none!important}
 }
 </style>
+
+<style id="premium-blue-hover-glow-v1">
+/* Soft layered blue ambient halo, visible only on hover/focus. */
+#work #grid .proj,
+#certs .cert-card{
+  isolation:isolate;
+  transition:box-shadow .48s cubic-bezier(.2,.8,.2,1), border-color .42s ease, transform .52s cubic-bezier(.2,.8,.2,1), filter .4s ease;
+}
+@media (hover:hover) and (pointer:fine){
+  #work #grid .proj:hover,
+  #certs .cert-card:hover{
+    box-shadow:
+      0 0 0 1px rgba(59,130,246,.30),
+      0 0 22px 5px rgba(59,130,246,.18),
+      0 20px 54px 9px rgba(37,99,235,.18),
+      0 35px 75px rgba(25,55,115,.14) !important;
+    border-color:rgba(59,130,246,.45) !important;
+    z-index:8;
+    position:relative;
+  }
+}
+#work #grid .proj:focus-within,
+#certs .cert-card:focus-within{
+  box-shadow:0 0 0 2px rgba(59,130,246,.35),0 0 28px 5px rgba(59,130,246,.17),0 20px 55px rgba(37,99,235,.15) !important;
+  z-index:8;
+  position:relative;
+}
+@media (prefers-reduced-motion:reduce){
+ #work #grid .proj,#certs .cert-card{transition:none!important}
+}
+</style>
 </head>
 <body>
 <div id="pre" aria-hidden="true">YUGESH P<span class="c">.</span></div>
