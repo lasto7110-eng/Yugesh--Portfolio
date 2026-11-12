@@ -61,11 +61,14 @@ async function saveCertificateOrder(ids){
   const start=Date.now();
   for(let i=0;i<ids.length;i++){
    const created_at=new Date(start-i*60000).toISOString();
-   const {error}=await db.from('portfolio_items').update({created_at}).eq('id',ids[i]);
+   const {data,error}=await db.from('portfolio_items').update({created_at}).eq('id',ids[i]).select('id,created_at');
    if(error)throw error;
+   if(!data?.length)throw new Error('Database did not allow the order update. Check Supabase RLS UPDATE policy.');
   }
-  status.textContent='✓ Order saved. Refresh the public website to see it.';
   await refresh();
+  const actual=rows.filter(x=>x.category==='certificate').map(x=>x.id);
+  if(actual.join('|')!==ids.join('|'))throw new Error('Saved order differs from database order');
+  status.textContent='✓ Order saved. Refresh the public website to see it.';
  }catch(e){status.textContent='Could not save order: '+e.message+'. Check Supabase update permissions.';await refresh()}
  finally{sortingBusy=false}
 }
@@ -84,34 +87,61 @@ async function refresh(){
   const left=document.createElement('div');left.className='item-title-wrap';
   if(section==='certificate'){
    const handle=document.createElement('span');handle.className='sort-handle';handle.textContent='⠿';handle.title='Drag to reorder';handle.setAttribute('aria-hidden','true');handle.setAttribute('role','button');handle.setAttribute('aria-label','Drag to reorder '+x.title);left.append(handle);
-   // Pointer-based sorting works with mouse, touch, and trackpads (HTML5 drag is unreliable on mobile).
-   let activePointer=null, moved=false, startY=0;
+   // Reorder using document-level pointer tracking, not pointer capture.
+   // The row follows the pointer and swaps as it crosses other rows.
+   handle.style.touchAction='none';
    handle.addEventListener('pointerdown',ev=>{
-    if(sortingBusy||ev.button!==0)return;
-    activePointer=ev.pointerId;moved=false;startY=ev.clientY;
-    handle.setPointerCapture(ev.pointerId);
-    d.classList.add('sort-moving');
+    if(sortingBusy || (ev.pointerType==='mouse'&&ev.button!==0))return;
     ev.preventDefault();
+    const list=$('items');
+    const before=[...list.querySelectorAll('.sortable-cert')].map(el=>el.dataset.id).join('|');
+    const pointerId=ev.pointerId;
+    const startY=ev.clientY;
+    let moved=false,finished=false;
+    const rowRect=d.getBoundingClientRect();
+    const marker=document.createElement('div');
+    marker.className='sort-drop-marker';
+    marker.style.height='4px';
+    marker.style.background='#2563eb';
+    marker.style.borderRadius='8px';
+    marker.style.margin='3px 0';
+    const ghost=d.cloneNode(true);
+    ghost.className='sort-drag-ghost';
+    ghost.style.cssText='position:fixed;z-index:99999;pointer-events:none;opacity:.95;background:white;border:1px solid #93b4ff;box-shadow:0 16px 40px #1d4ed833;border-radius:12px;padding:10px;left:'+rowRect.left+'px;top:'+rowRect.top+'px;width:'+rowRect.width+'px;box-sizing:border-box';
+    const move=event=>{
+     if(event.pointerId!==pointerId||finished)return;
+     if(Math.abs(event.clientY-startY)>4)moved=true;
+     if(!moved)return;
+     if(!ghost.isConnected){document.body.append(ghost);d.style.opacity='.25'}
+     ghost.style.top=(rowRect.top+event.clientY-startY)+'px';
+     const candidates=[...list.querySelectorAll('.sortable-cert')].filter(el=>el!==d);
+     let inserted=false;
+     for(const candidate of candidates){
+      const r=candidate.getBoundingClientRect();
+      if(event.clientY<r.top+r.height/2){list.insertBefore(d,candidate);inserted=true;break}
+     }
+     if(!inserted)list.append(d);
+     // Keep the list accessible near its top/bottom edges.
+     if(event.clientY<80)window.scrollBy(0,-12);
+     else if(event.clientY>window.innerHeight-80)window.scrollBy(0,12);
+    };
+    const cleanup=()=>{
+     document.removeEventListener('pointermove',move);
+     document.removeEventListener('pointerup',end);
+     document.removeEventListener('pointercancel',cancel);
+     ghost.remove();d.style.opacity='';
+    };
+    const end=async event=>{
+     if(event.pointerId!==pointerId||finished)return;
+     finished=true;cleanup();
+     const ids=[...list.querySelectorAll('.sortable-cert')].map(el=>el.dataset.id);
+     if(moved&&ids.join('|')!==before)await saveCertificateOrder(ids);
+    };
+    const cancel=event=>{if(event.pointerId!==pointerId||finished)return;finished=true;cleanup();refresh()};
+    document.addEventListener('pointermove',move,{passive:false});
+    document.addEventListener('pointerup',end);
+    document.addEventListener('pointercancel',cancel);
    });
-   handle.addEventListener('pointermove',ev=>{
-    if(activePointer!==ev.pointerId)return;
-    if(Math.abs(ev.clientY-startY)>5)moved=true;
-    if(!moved)return;
-    const target=document.elementFromPoint(ev.clientX,ev.clientY)?.closest('.sortable-cert');
-    if(!target||target===d||target.parentElement!==$('items'))return;
-    const r=target.getBoundingClientRect();
-    const before=ev.clientY<r.top+r.height/2;
-    $('items').insertBefore(d,before?target:target.nextSibling);
-   });
-   const finishPointer=async ev=>{
-    if(activePointer!==ev.pointerId)return;
-    activePointer=null;d.classList.remove('sort-moving');
-    if(handle.hasPointerCapture(ev.pointerId))handle.releasePointerCapture(ev.pointerId);
-    if(moved)await saveCertificateOrder([...$('items').querySelectorAll('.sortable-cert')].map(el=>el.dataset.id));
-   };
-   handle.addEventListener('pointerup',finishPointer);
-   handle.addEventListener('pointercancel',ev=>{if(activePointer===ev.pointerId){activePointer=null;d.classList.remove('sort-moving')}});
-
    d.draggable=false;
 
   }
