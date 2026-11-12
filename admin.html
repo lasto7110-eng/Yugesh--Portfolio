@@ -6,7 +6,9 @@
 </style><style id="certificate-pointer-sort-fix">
 .sort-handle{display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:42px;border-radius:10px;background:#edf3ff;color:#2563eb;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;flex-shrink:0}
 .sort-handle:active{cursor:grabbing;background:#dbeafe}.sortable-cert{touch-action:pan-y}.sortable-cert.sort-moving{background:#eaf1ff;box-shadow:0 8px 25px #1e40af22;outline:2px solid #93c5fd}.sortable-cert.sort-target{border-top:3px solid #2563eb}
-</style><style id="admin-profile-style">.profile-upload-layout{display:flex;align-items:center;gap:24px;flex-wrap:wrap}.profile-upload-layout>div{flex:1;min-width:230px}.profile-admin-preview{width:170px;height:170px;object-fit:cover;border-radius:22px;border:3px solid #dbeafe;box-shadow:0 12px 35px #2563eb1f}.profile-admin-preview[hidden]{display:none!important}#profileBtn{background:#2563eb}</style></head><body>
+</style><style id="admin-profile-style">.profile-upload-layout{display:flex;align-items:center;gap:24px;flex-wrap:wrap}.profile-upload-layout>div{flex:1;min-width:230px}.profile-admin-preview{width:170px;height:170px;object-fit:cover;border-radius:22px;border:3px solid #dbeafe;box-shadow:0 12px 35px #2563eb1f}.profile-admin-preview[hidden]{display:none!important}#profileBtn{background:#2563eb}</style><style id="file-selection-clear-style">
+.file-pick-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:6px 0 10px}.file-pick-row input[type=file]{flex:1 1 210px;min-width:0}.file-pick-clear{border:1px solid #d6e2f3!important;background:#fff!important;color:#315078!important;padding:6px!important;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:9px!important;font-size:22px!important;line-height:1!important;white-space:nowrap}.file-pick-clear:hover:not(:disabled){background:#eff6ff!important;border-color:#93c5fd!important}.file-pick-clear:disabled{opacity:.5;cursor:not-allowed}.file-pick-row .file-pick-name{flex-basis:100%;font-size:12px;color:#64748b;overflow-wrap:anywhere}
+</style></head><body>
 <header><h1>Yugesh <span class="accent">Admin</span></h1><button id="logout" class="secondary hide">Log out</button></header>
 <main class="wrap"><section id="loginPanel" class="panel"><h2>Admin login</h2><form id="loginForm"><label>Email</label><input id="email" type="email" autocomplete="username" required><label>Password</label><input id="password" type="password" autocomplete="current-password" required><p><button type="submit">Sign in</button></p></form><p id="loginMsg" class="msg" role="status"></p></section>
 <section id="dashboard" class="hide admin-layout">
@@ -263,4 +265,85 @@ if($('category').value==='certificate')image=null;const payload={category:$('cat
 window.addEventListener('admin-section-change',()=>{if(rows.length||$('items').children.length)refresh()});
 await sync();
 </script>
-</body></html>
+<script id="file-selection-clear-script">
+(()=>{
+ const ids=['imageFile','videoFile','certificatePdfFile','profileFile','resumeFile'];
+ function install(){
+  for(const id of ids){
+   const input=document.getElementById(id);
+   if(!input||input.dataset.clearInstalled)return;
+   input.dataset.clearInstalled='1';
+   const wrapper=document.createElement('div');
+   wrapper.className='file-pick-row';
+   input.parentNode.insertBefore(wrapper,input);
+   wrapper.appendChild(input);
+   const clear=document.createElement('button');
+   clear.type='button';
+   clear.className='file-pick-clear';
+   clear.textContent='×';
+   clear.setAttribute('aria-label','Remove selected file');
+   const name=document.createElement('span');
+   name.className='file-pick-name';
+   name.setAttribute('aria-live','polite');
+   wrapper.append(clear,name);
+   function sync(){
+    const file=input.files?.[0];
+    clear.disabled=!file;
+    name.textContent=file?'Selected: '+file.name:'';
+   }
+   clear.addEventListener('click',()=>{
+    // Clears the pending selection without deleting any previously uploaded file.
+    input.value='';
+    input.dispatchEvent(new Event('change',{bubbles:true}));
+    sync();
+   });
+   input.addEventListener('change',sync);
+   // When forms reset programmatically, reflect the cleared selection.
+   const form=input.closest('form');
+   form?.addEventListener('reset',()=>setTimeout(sync,0));
+   sync();
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
+ else install();
+})();
+</script><style id="external-url-clear-style">
+.external-url-clear-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.external-url-clear-row input{flex:1 1 200px;min-width:0}.external-url-clear-button{border:1px solid #d6e2f3!important;background:#fff!important;color:#315078!important;padding:6px!important;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:9px!important;font-size:22px!important;line-height:1!important;white-space:nowrap}.external-url-clear-button:hover:not(:disabled){background:#eff6ff!important;border-color:#93c5fd!important}.external-url-clear-button:disabled{opacity:.5;cursor:not-allowed}
+</style>
+<script id="external-url-clear-script">
+(()=>{
+ const ids=['imageUrl','videoUrl'];
+ function setup(){
+  ids.forEach(id=>{
+   const input=document.getElementById(id);
+   if(!input||input.dataset.urlClearInstalled)return;
+   input.dataset.urlClearInstalled='1';
+   const wrap=document.createElement('div');
+   wrap.className='external-url-clear-row';
+   input.parentNode.insertBefore(wrap,input);
+   wrap.appendChild(input);
+   const button=document.createElement('button');
+   button.type='button';
+   button.className='external-url-clear-button';
+   button.textContent='×';
+   button.setAttribute('aria-label','Clear '+(id==='videoUrl'?'video':'image')+' URL');
+   wrap.appendChild(button);
+   const update=()=>{button.disabled=!input.value.trim()};
+   button.addEventListener('click',()=>{
+    input.value='';
+    input.dispatchEvent(new Event('input',{bubbles:true}));
+    input.dispatchEvent(new Event('change',{bubbles:true}));
+    update();
+   });
+   input.addEventListener('focus',update);
+   input.addEventListener('input',update);
+   input.addEventListener('change',update);
+   input.closest('form')?.addEventListener('reset',()=>setTimeout(update,0));
+   // Existing edit flows may populate URL fields programmatically.
+   new MutationObserver(update).observe(input,{attributes:true,attributeFilter:['value']});
+   update();
+  });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
+})();
+</script></body></html>
