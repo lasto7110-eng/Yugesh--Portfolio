@@ -284,10 +284,7 @@ const SITE={
   {t:"AI-Assisted Creative Video",c:"AI Projects",d:"Editable showcase for AI-assisted video production.",tools:"Google Flow, ChatGPT, CapCut",obj:"Show how AI tools support ideas, visuals and video production."},
   {t:"Social Media Creative Design",c:"Graphic Design",d:"Digital promotional artwork and social media content.",tools:"Canva",obj:"Create scroll-stopping artwork for social platforms."}
  ],
- certs:[
-  {t:"Graphic Design Essentials"},{t:"Canva Essentials"},{t:"Create Scroll Stopping Content"},{t:"Marketing with Canva"},
-  {t:"Scale Creative Campaigns"},{t:"Work Smarter with AI"},{t:"AI Skills for Students"},{t:"UI/UX for Beginners",issuer:"Great Learning"}
- ].map(x=>({issuer:"",file:"",...x}))  // add file:"./assets/cert.pdf" to enable "View Certificate"
+ certs:[] // Certificates are loaded only from Supabase admin entries
 };
 /* ======================================== */
 const $=(s,r=document)=>r.querySelector(s);
@@ -367,10 +364,14 @@ $("#app").innerHTML=`
 
 
 
-<section id="certs" style="padding-top:24px"><div class="wrap">
+<section id="certs" class="horizontal-certs" aria-label="Certificates" style="padding-top:24px"><div class="cert-pin"><div class="wrap">
 <span class="label">Certifications</span><h2>Always learning.</h2>
-<div class="g3">${SITE.certs.map(c=>`<div class="card cert rv"><div class="pv">Certificate preview</div><h3>${c.t}</h3>${c.issuer?`<p class="sub" style="margin-top:-6px">${c.issuer}</p>`:""}<button ${c.file?`onclick="window.open('${c.file}','_blank')"`:"disabled"}>View Certificate</button></div>`).join("")}</div>
-</div></section>
+<div class="cert-viewport" id="certViewport"><div class="cert-track" id="certTrack"></div></div>
+<div class="cert-progress" id="certProgressWrap" aria-hidden="true"><span id="certProgress"></span></div>
+<p class="cert-hint" id="certHint">Scroll to explore certificates horizontally</p>
+<p id="certEmpty" class="cert-empty">Certificates will appear here when added from the admin panel.</p>
+</div></div></section>
+<div class="cert-viewer" id="certViewer" hidden role="dialog" aria-modal="true" aria-label="Certificate PDF viewer"><div class="cert-viewer-head"><strong id="certViewerTitle">Certificate</strong><div><a id="certViewerExternal" target="_blank" rel="noopener noreferrer">Open in new tab ↗</a><button id="certViewerClose" type="button" aria-label="Close certificate viewer">✕</button></div></div><iframe id="certViewerFrame" title="Certificate PDF" loading="lazy" allow="fullscreen"></iframe></div>
 
 <section id="contact" style="padding-top:24px"><div class="wrap contact">
 <div><span class="label">Contact</span><h2 style="margin-bottom:20px">Let's create something <span class="c">great.</span></h2>
@@ -495,15 +496,20 @@ async function loadContent(){
   SITE.projects.push(...projects.map(x=>({t:x.title,c:categoryMap[x.category],d:x.description||'',obj:x.description||'',tools:'',image:safeURL(x.image_url),video:safeURL(x.video_url),link:''})));
   grid.insertAdjacentHTML('afterbegin',projects.map((x,i)=>{const p=SITE.projects[originalCount+i];return `<button class="proj" data-i="${originalCount+i}" data-c="${escapeHTML(p.c)}" aria-label="Open ${escapeHTML(p.t)}"><div class="thumb">${p.image?`<img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.t)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:`<div class="in">${p.video?'Watch video':'New project'}</div>`}${p.video?'<span class="inline-play" aria-hidden="true">▶</span>':''}</div><div class="pb"><div><div class="cat">${escapeHTML(p.c)}</div><h3>${escapeHTML(p.t)}</h3></div>${p.video?'<span class="inline-arrow" aria-hidden="true">↗</span>':''}<p>${escapeHTML(p.d)}</p></div></button>`}).join(''));
  }
- if(certs.length){
-  const box=document.querySelector('#certs .g3');
-  if(box)box.insertAdjacentHTML('afterbegin',certs.map(x=>{
-   const image=safeURL(x.image_url);
-   const certificateLink=safeURL(x.video_url)||image;
-   const preview=image?`<img src="${escapeHTML(image)}" alt="${escapeHTML(x.title)}" style="width:100%;height:100%;object-fit:contain">`:'Certificate preview';
-   return `<div class="card cert rv in"><div class="pv">${certificateLink?`<a href="${escapeHTML(certificateLink)}" target="_blank" rel="noopener noreferrer" aria-label="View ${escapeHTML(x.title)} certificate" style="display:block;width:100%;height:100%;text-decoration:none;color:inherit">${preview}</a>`:preview}</div><h3>${escapeHTML(x.title)}</h3>${x.description?`<p>${escapeHTML(x.description)}</p>`:''}${certificateLink?`<a href="${escapeHTML(certificateLink)}" target="_blank" rel="noopener noreferrer">View Certificate ↗</a>`:''}</div>`;
-  }).join(''));
+ const certTrack=document.getElementById('certTrack');
+ if(certTrack){
+  certTrack.replaceChildren();
+  const entries=certs.filter(x=>safeURL(x.video_url)||safeURL(x.image_url));
+  certTrack.innerHTML=entries.map(x=>{
+   const image=safeURL(x.image_url),link=safeURL(x.video_url)||image;
+   const isPdf=/\.pdf(?:[?#]|$)/i.test(link)||/drive\.google\.com\//i.test(link);
+   const preview=image&&!/\.pdf(?:[?#]|$)/i.test(image)?`<img src="${escapeHTML(image)}" alt="" loading="lazy">`:`<div class="cert-pdf-icon"><span>PDF</span><svg viewBox="0 0 64 76" aria-hidden="true"><path d="M8 2h32l16 16v56H8z" fill="none" stroke="currentColor" stroke-width="3"/><path d="M40 2v16h16" fill="none" stroke="currentColor" stroke-width="3"/></svg></div>`;
+   return `<article class="cert-card"><div class="cert-card-preview">${preview}</div><div class="cert-card-info"><span class="cert-type">${isPdf?'PDF CERTIFICATE':'CERTIFICATE'}</span><h3>${escapeHTML(x.title)}</h3>${x.description?`<p>${escapeHTML(x.description)}</p>`:''}<button type="button" class="cert-open" data-url="${escapeHTML(link)}" data-title="${escapeHTML(x.title)}">View Certificate ↗</button></div></article>`;
+  }).join('');
+  document.getElementById('certEmpty').hidden=entries.length>0;
+  window.dispatchEvent(new Event('certificates-updated'));
  }
+
 }
 loadContent().catch(e=>console.error("Portfolio loading failed",e));
 async function updateResumeLink(){if(!db)return;const url=db.storage.from('portfolio-media').getPublicUrl('resume/current.pdf').data.publicUrl;try{const r=await fetch(url,{method:'HEAD',cache:'no-store'});if(!r.ok)return;document.querySelectorAll('a').forEach(a=>{if(a.textContent.includes('Download Resume')){a.href=url+'?v='+Date.now();a.setAttribute('download','Yugesh_Resume.pdf')}})}catch(e){console.warn('Resume check failed',e)}}
@@ -575,6 +581,57 @@ updateResumeLink();
  window.addEventListener('load',scheduleMeasure);
  reduced.addEventListener?.('change',scheduleMeasure);
  scheduleMeasure();
+})();
+</script>
+<style id="certificate-horizontal-v1">
+#certs.horizontal-certs{position:relative!important;overflow:visible!important;padding-bottom:0!important}
+#certs .cert-pin{position:sticky;top:0;height:100svh;display:flex;align-items:center;overflow:hidden;background:var(--background,#f4f5f7);z-index:2}
+#certs .cert-pin>.wrap{width:100%;max-width:100%;padding-inline:clamp(16px,5vw,72px)}
+#certs .cert-viewport{overflow:hidden;width:100%;touch-action:pan-y}
+#certs .cert-track{display:flex;flex-wrap:nowrap;gap:clamp(14px,2vw,26px);width:max-content;max-width:none;will-change:transform}
+#certs .cert-card{flex:0 0 clamp(265px,36vw,490px);width:clamp(265px,36vw,490px);max-width:calc(100vw - 40px);background:var(--surface,#fff);border:1px solid var(--border,#e2e5e9);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 8px 28px rgba(20,25,30,.04)}
+#certs .cert-card-preview{height:clamp(175px,27vh,280px);display:grid;place-items:center;background:#e9edf4;overflow:hidden}
+#certs .cert-card-preview img{height:100%;width:100%;object-fit:contain}
+#certs .cert-pdf-icon{display:grid;place-items:center;color:#64748b;position:relative}
+#certs .cert-pdf-icon svg{width:65px;height:78px}
+#certs .cert-pdf-icon span{position:absolute;top:43px;font-size:11px;font-weight:800;color:#dc4d45;letter-spacing:.08em}
+#certs .cert-card-info{padding:20px 22px 24px}
+#certs .cert-type{font-size:10px;letter-spacing:.13em;color:#84909c;font-weight:800}
+#certs .cert-card h3{font-size:clamp(17px,1.7vw,23px);line-height:1.3;margin:8px 0 10px}
+#certs .cert-card p{font-size:13px;color:#75808d;margin:0 0 14px}
+#certs .cert-open{background:none;border:0;border-bottom:1px solid currentColor;padding:0 0 4px;cursor:pointer;color:inherit;font:700 13px inherit}
+#certs .cert-progress{height:3px;margin-top:17px;background:#d7dce5;border-radius:8px;overflow:hidden}
+#certs .cert-progress span{display:block;width:100%;height:100%;background:var(--coral,#fa5547);transform:scaleX(0);transform-origin:left}
+#certs .cert-hint{font-size:12px;color:#77808e;margin-top:10px}
+#certs .cert-empty{padding:20px 0;color:#77808e}
+#certs .cert-empty[hidden],.cert-viewer[hidden]{display:none!important}
+.cert-viewer{position:fixed;inset:3vh 3vw;z-index:999999;background:#fff;border-radius:15px;display:flex;flex-direction:column;box-shadow:0 0 0 100vmax rgba(0,0,0,.76);overflow:hidden}
+.cert-viewer-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:12px;background:#141a23;color:#fff}
+.cert-viewer-head>div{display:flex;align-items:center;gap:16px}
+.cert-viewer-head a{color:#fff;font-size:12px;text-decoration:underline}
+.cert-viewer-head button{color:#fff;background:transparent;border:1px solid #657084;border-radius:7px;padding:7px 11px;cursor:pointer}
+.cert-viewer iframe{border:0;width:100%;flex:1;background:#fff}
+@media(max-width:600px){#certs .cert-pin{height:100svh}#certs .cert-card{flex-basis:min(82vw,370px);width:min(82vw,370px)}.cert-viewer{inset:1vh 1vw}}
+@media(prefers-reduced-motion:reduce){#certs .cert-track{will-change:auto}}
+</style>
+<script id="certificate-horizontal-controller-v1">
+(()=>{
+ const section=document.getElementById('certs'),pin=section?.querySelector('.cert-pin'),viewport=document.getElementById('certViewport'),track=document.getElementById('certTrack'),bar=document.getElementById('certProgress'),hint=document.getElementById('certHint'),progressWrap=document.getElementById('certProgressWrap');
+ if(!section||!pin||!viewport||!track)return;
+ let distance=0,travel=0,raf=0,measureRaf=0;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ function update(){raf=0;const r=section.getBoundingClientRect(),p=travel>0?Math.max(0,Math.min(1,-r.top/travel)):0;track.style.transform=`translate3d(${-distance*p}px,0,0)`;bar.style.transform=`scaleX(${p})`}
+ function measure(){measureRaf=0;track.style.transform='translate3d(0,0,0)';distance=reduced.matches?0:Math.max(0,track.scrollWidth-viewport.clientWidth);travel=distance;section.style.height=distance?`${Math.ceil(pin.getBoundingClientRect().height+distance)}px`:'';hint.hidden=!distance;progressWrap.hidden=!distance;update()}
+ const schedule=()=>{if(!measureRaf)measureRaf=requestAnimationFrame(measure)};
+ addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(update)},{passive:true});addEventListener('resize',schedule,{passive:true});addEventListener('certificates-updated',schedule);
+ if(window.ResizeObserver){const ro=new ResizeObserver(schedule);ro.observe(viewport);ro.observe(track)}
+ new MutationObserver(schedule).observe(track,{childList:true});document.fonts?.ready.then(schedule);addEventListener('load',schedule);reduced.addEventListener?.('change',schedule);schedule();
+ const viewer=document.getElementById('certViewer'),frame=document.getElementById('certViewerFrame'),close=document.getElementById('certViewerClose');
+ const external=document.getElementById('certViewerExternal');let previousFocus=null;
+ function viewerUrl(link){try{const u=new URL(link);if(!['https:','http:'].includes(u.protocol))return '';if(u.hostname==='drive.google.com'){const id=(u.pathname.match(/\/file\/d\/([\w-]+)/)||[])[1]||u.searchParams.get('id');if(id)return `https://drive.google.com/file/d/${id}/preview`;}return u.href}catch{return ''}}
+ track.addEventListener('click',e=>{const btn=e.target.closest('.cert-open');if(!btn)return;const link=viewerUrl(btn.dataset.url);if(!link)return;previousFocus=document.activeElement;document.getElementById('certViewerTitle').textContent=btn.dataset.title||'Certificate';external.href=btn.dataset.url;frame.src=link;viewer.hidden=false;document.body.style.overflow='hidden';close.focus()});
+ function hide(){viewer.hidden=true;frame.removeAttribute('src');document.body.style.overflow='';previousFocus?.focus()}
+ close.addEventListener('click',hide);addEventListener('keydown',e=>{if(e.key==='Escape'&&!viewer.hidden)hide()});
 })();
 </script>
 </body>
