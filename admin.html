@@ -27,7 +27,7 @@ let video=$('videoUrl').value.trim()||null;const vf=$('videoFile').files[0];if([
 if($('category').value==='certificate'){
  const pdf=$('certificatePdfFile').files[0];
  if(pdf){if(!(pdf.type==='application/pdf'||pdf.name.toLowerCase().endsWith('.pdf')))throw Error('Please select a PDF certificate.');if(pdf.size>50*1024*1024)throw Error('Certificate PDF exceeds 50 MB.');const path='certificates/'+crypto.randomUUID()+'.pdf';const {error}=await db.storage.from('portfolio-media').upload(path,pdf,{contentType:'application/pdf',upsert:false});if(error)throw error;video=db.storage.from('portfolio-media').getPublicUrl(path).data.publicUrl}
- if(!video)throw Error('Upload a certificate PDF or enter its Google Drive PDF link.');
+ if(!video)throw Error('Upload a certificate PDF or enter its Google Drive PDF link. Thumbnail is generated automatically.');
  try{const u=new URL(video);if(!['https:','http:'].includes(u.protocol))throw Error();}catch{throw Error('Enter a valid public PDF URL or Google Drive link.');}
  }
 const payload={category:$('category').value,title:$('title').value.trim(),description:$('description').value.trim(),image_url:image,video_url:video};const id=$('editId').value;const result=id?await db.from('portfolio_items').update(payload).eq('id',id):await db.from('portfolio_items').insert(payload);if(result.error)throw result.error;reset();msg('saveMsg','Saved successfully!');await refresh()}catch(err){msg('saveMsg','Error: '+err.message)}finally{btn.disabled=false}};
