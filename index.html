@@ -754,5 +754,79 @@ updateResumeLink();
  if('MutationObserver'in window)new MutationObserver(schedule).observe(track,{childList:true});schedule();
 })();
 </script>
+
+<style id="project-scroll-card-reveal-v1">
+/* Cards appear individually as the horizontal project rail scrolls into view. */
+#work #grid .proj.project-reveal-ready:not(.project-reveal-shown){
+ opacity:0!important;
+ filter:blur(7px);
+ translate:0 38px;
+ scale:.94;
+ pointer-events:none;
+}
+#work #grid .proj.project-reveal-shown{
+ opacity:1!important;
+ filter:blur(0);
+ translate:0 0;
+ scale:1;
+ pointer-events:auto;
+ transition:opacity .62s ease,filter .68s ease,translate .75s cubic-bezier(.2,.8,.2,1),scale .75s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease!important;
+}
+#work #grid .proj.project-reveal-shown:hover{
+ translate:0 -10px;
+ scale:1.025;
+ z-index:3;
+ position:relative;
+}
+@media(prefers-reduced-motion:reduce){
+ #work #grid .proj.project-reveal-ready{opacity:1!important;filter:none!important;translate:none!important;scale:1!important;transition:none!important;pointer-events:auto!important}
+}
+</style>
+<script id="project-scroll-card-reveal-v1">
+(()=>{
+ const viewport=document.getElementById('workViewport');
+ const grid=document.getElementById('grid');
+ const section=document.getElementById('work');
+ if(!viewport||!grid||!section)return;
+ const reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+ let scheduled=0;
+ function reveal(){
+  scheduled=0;
+  const view=viewport.getBoundingClientRect();
+  const sectionRect=section.getBoundingClientRect();
+  // Don't reveal cards until the user approaches the project section.
+  if(sectionRect.top>window.innerHeight+90||sectionRect.bottom< -90)return;
+  const cards=[...grid.querySelectorAll('.proj')].filter(el=>el.getClientRects().length);
+  cards.forEach((card)=>{
+   if(card.classList.contains('project-reveal-shown'))return;
+   if(reduce.matches){card.classList.add('project-reveal-shown');return}
+   const r=card.getBoundingClientRect();
+   // Reveal cards only once they actually reach the horizontal viewport.
+   if(r.left<view.right-25&&r.right>view.left+20){
+    card.classList.add('project-reveal-shown');
+   }
+  });
+ }
+ function prepare(){
+  grid.querySelectorAll('.proj').forEach(el=>{
+   if(!el.classList.contains('project-reveal-ready')){
+    el.classList.add('project-reveal-ready');
+    // The existing general scroll observer must not leave cards invisible.
+    el.classList.add('motion-visible');
+   }
+  });
+  schedule();
+ }
+ function schedule(){if(!scheduled)scheduled=requestAnimationFrame(reveal)}
+ new MutationObserver(prepare).observe(grid,{childList:true});
+ window.addEventListener('scroll',schedule,{passive:true});
+ window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('orientationchange',schedule,{passive:true});
+ document.getElementById('filters')?.addEventListener('click',()=>requestAnimationFrame(prepare));
+ window.addEventListener('pageshow',prepare);
+ reduce.addEventListener?.('change',prepare);
+ prepare();
+})();
+</script>
 </body>
 </html>

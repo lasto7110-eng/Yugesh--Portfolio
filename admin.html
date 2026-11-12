@@ -23,7 +23,7 @@
 </nav><a class="admin-site-link" href="index.html" target="_blank" rel="noopener">View live portfolio ↗</a></aside>
 <div class="admin-main"><div class="admin-topline"><div><div class="sidebar-kicker">YUGESH / ADMIN PANEL</div><h2 id="sectionHeading">Overview</h2><p id="sectionSubheading" class="muted">Manage your creative portfolio in one place.</p></div><span class="admin-live-dot">Supabase connected</span></div>
 <div id="overviewPanel" class="overview-panel"><div class="stat-grid" id="adminStats"></div><div class="overview-intro"><strong>Quick actions</strong><p>Choose a section to upload, edit or manage content without searching through a long page.</p><div class="quick-actions"><button type="button" data-jump="video">Add video</button><button type="button" data-jump="graphic_design">Add design</button><button type="button" data-jump="certificate">Add certificate</button><button type="button" data-jump="resume">Update resume</button></div></div></div>
-<div id="contentEditorPanel" class="panel admin-content-panel hide"><h2 id="formTitle">Add portfolio content</h2><p class="muted">Manage content in the selected sidebar section. Certificate thumbnails are generated from PDFs automatically.</p><form id="itemForm"><input id="editId" type="hidden"><div id="categoryField" class="hide"><label>Type</label><select id="category"><option value="video">Video Editing</option><option value="graphic_design">Graphic Design</option><option value="event_posters">Event Posters</option><option value="social_media">Social Media</option><option value="ai_projects">AI Projects</option><option value="certificate">Certificate</option><option value="project">Legacy Project</option></select></div><label>Title</label><input id="title" maxlength="150" required><label>Description</label><textarea id="description"></textarea><div id="imageFields"><label>Image / thumbnail upload (50 MB maximum)</label><input id="imageFile" type="file" accept="image/*"><small>Upload a new image, or keep the existing one when editing.</small><label>Image URL (optional)</label><input id="imageUrl" type="url" placeholder="https://..."></div><div id="videoOptions" class="hide"><label>Video source</label><select id="videoSource"><option value="mp4">Direct MP4 Upload</option><option value="youtube">YouTube Link</option><option value="instagram">Instagram Link</option><option value="drive">Google Drive Link</option></select><div id="mp4Options"><label>MP4 file (maximum 50 MB)</label><input id="videoFile" type="file" accept="video/mp4,.mp4"><small>Large files may need a higher Supabase Storage upload limit.</small></div></div><div id="certificatePdfOptions" class="hide"><label>Certificate PDF upload (maximum 50 MB)</label><input id="certificatePdfFile" type="file" accept="application/pdf,.pdf"><small>Upload your certificate PDF directly, or paste a public Google Drive PDF link below. Set Drive sharing to Anyone with the link → Viewer.</small></div><label id="urlLabel">Video URL or certificate link (optional)</label><input id="videoUrl" type="url" placeholder="https://..."><p id="videoHint" class="muted"></p><p class="flex"><button id="saveBtn" type="submit">Save content</button><button id="cancelEdit" type="button" class="outline">Clear / Cancel edit</button></p></form><p id="saveMsg" class="msg" role="status"></p></div><div id="resumePanel" class="panel hide"><h2>Manage Resume</h2><p class="muted">Upload a PDF to update the Download Resume button on your website.</p><label>Resume PDF (maximum 10 MB)</label><input id="resumeFile" type="file" accept="application/pdf,.pdf"><p class="flex"><button id="resumeBtn" type="button">Upload / Replace Resume</button><a id="resumePreview" class="hide" target="_blank" rel="noopener noreferrer" style="align-self:center">View current resume ↗</a></p><p id="resumeMsg" class="msg" role="status"></p></div><div id="contentListPanel" class="panel hide"><div class="list-head"><h2 id="manageHeading">Manage content</h2><span id="visibleCount" class="muted"></span></div><p id="orderHint" class="muted hide">☰ Drag certificates to change their order. On mobile, use ↑ / ↓ buttons. Order saves automatically and updates the public website.</p><div id="orderStatus" class="msg" role="status"></div><div id="items">Loading...</div></div><p class="muted">Changes are stored in Supabase. Only the configured admin account can write data. Your existing hardcoded portfolio entries remain on the website.</p></div></section></main>
+<div id="contentEditorPanel" class="panel admin-content-panel hide"><h2 id="formTitle">Add portfolio content</h2><p class="muted">Manage content in the selected sidebar section. Certificate thumbnails are generated from PDFs automatically.</p><form id="itemForm"><input id="editId" type="hidden"><div id="categoryField" class="hide"><label>Type</label><select id="category"><option value="video">Video Editing</option><option value="graphic_design">Graphic Design</option><option value="event_posters">Event Posters</option><option value="social_media">Social Media</option><option value="ai_projects">AI Projects</option><option value="certificate">Certificate</option><option value="project">Legacy Project</option></select></div><label>Title</label><input id="title" maxlength="150" required><label>Description</label><textarea id="description"></textarea><div id="imageFields"><label>Image / thumbnail upload (50 MB maximum)</label><input id="imageFile" type="file" accept="image/*"><small>Upload a new image, or keep the existing one when editing.</small><label>Image URL (optional)</label><input id="imageUrl" type="url" placeholder="https://..."></div><div id="videoOptions" class="hide"><label>Video source</label><select id="videoSource"><option value="mp4">Direct MP4 Upload</option><option value="youtube">YouTube Link</option><option value="instagram">Instagram Link</option><option value="drive">Google Drive Link</option></select><div id="mp4Options"><label>MP4 file (maximum 50 MB)</label><input id="videoFile" type="file" accept="video/mp4,.mp4"><small>Large files may need a higher Supabase Storage upload limit.</small></div></div><div id="certificatePdfOptions" class="hide"><label>Certificate PDF upload (maximum 50 MB)</label><input id="certificatePdfFile" type="file" accept="application/pdf,.pdf"><small>Upload your certificate PDF directly, or paste a public Google Drive PDF link below. Set Drive sharing to Anyone with the link → Viewer.</small></div><label id="urlLabel">Video URL or certificate link (optional)</label><input id="videoUrl" type="url" placeholder="https://..."><p id="videoHint" class="muted"></p><p class="flex"><button id="saveBtn" type="submit">Save content</button><button id="cancelEdit" type="button" class="outline">Clear / Cancel edit</button></p></form><p id="saveMsg" class="msg" role="status"></p></div><div id="resumePanel" class="panel hide"><h2>Manage Resume</h2><p class="muted">Upload a PDF to update the Download Resume button on your website.</p><label>Resume PDF (maximum 10 MB)</label><input id="resumeFile" type="file" accept="application/pdf,.pdf"><p class="flex"><button id="resumeBtn" type="button">Upload / Replace Resume</button><a id="resumePreview" class="hide" target="_blank" rel="noopener noreferrer" style="align-self:center">View current resume ↗</a></p><p id="resumeMsg" class="msg" role="status"></p></div><div id="contentListPanel" class="panel hide"><div class="list-head"><h2 id="manageHeading">Manage content</h2><span id="visibleCount" class="muted"></span></div><p id="orderHint" class="muted hide">☰ Drag items to reorder within this section. You can also use ↑ / ↓ buttons. Order saves automatically and updates the public website.</p><div id="orderStatus" class="msg" role="status"></div><div id="items">Loading...</div></div><p class="muted">Changes are stored in Supabase. Only the configured admin account can write data. Your existing hardcoded portfolio entries remain on the website.</p></div></section></main>
 <script id="admin-dashboard-router">
 (function(){
  const names={overview:'Overview',video:'Video Editing',graphic_design:'Graphic Design',event_posters:'Event Posters',social_media:'Social Media',ai_projects:'AI Projects',certificate:'Certificates',project:'Legacy Projects',resume:'Resume'};
@@ -50,14 +50,13 @@ const msg=(id,s)=>$(id).textContent=s;
 function renderStats(){const stats=[['Total content',rows.length],['Projects',rows.filter(x=>x.category!=='certificate').length],['Certificates',rows.filter(x=>x.category==='certificate').length],['Video edits',rows.filter(x=>x.category==='video').length],['Designs',rows.filter(x=>['graphic_design','event_posters'].includes(x.category)).length],['AI projects',rows.filter(x=>x.category==='ai_projects').length]];$('adminStats').innerHTML=stats.map(([label,value])=>`<div class="stat-card"><div class="stat-value">${value}</div><div class="stat-label">${label}</div></div>`).join('')}
 function reset(){ $('itemForm').reset();$('editId').value='';const section=window.adminSection?.();if(section&&section!=='overview'&&section!=='resume')$('category').value=section;$('formTitle').textContent=section&&section!=='overview'?'Add '+({certificate:'Certificates',video:'Video Editing',graphic_design:'Graphic Design',event_posters:'Event Posters',social_media:'Social Media',ai_projects:'AI Projects',project:'Legacy Projects'}[section]||'content'):'Add portfolio content';msg('saveMsg','');toggleVideo() }
 let sortingBusy=false;
-async function saveCertificateOrder(ids){
+async function saveSectionOrder(ids,category){
  if(sortingBusy)return;
  sortingBusy=true;
- const status=$('orderStatus');status.textContent='Saving certificate order…';
- const originals=rows.filter(x=>x.category==='certificate').map(x=>x.created_at).sort((a,b)=>new Date(b)-new Date(a));
+ const status=$('orderStatus');status.textContent='Saving '+(category==='certificate'?'certificate':'project')+' order…';
+
  try{
-  // Reuse existing created_at field so no database migration or new permissions are needed.
-  // Keep timestamps unique and close to existing dates; public site already sorts descending.
+  // Public portfolio already orders records by created_at descending.
   const start=Date.now();
   for(let i=0;i<ids.length;i++){
    const created_at=new Date(start-i*60000).toISOString();
@@ -66,9 +65,9 @@ async function saveCertificateOrder(ids){
    if(!data?.length)throw new Error('Database did not allow the order update. Check Supabase RLS UPDATE policy.');
   }
   await refresh();
-  const actual=rows.filter(x=>x.category==='certificate').map(x=>x.id);
+  const actual=rows.filter(x=>x.category===category).map(x=>x.id);
   if(actual.join('|')!==ids.join('|'))throw new Error('Saved order differs from database order');
-  status.textContent='✓ Order saved. Refresh the public website to see it.';
+  status.textContent='✓ Order saved for this section. Refresh the public website to see it.';
  }catch(e){status.textContent='Could not save order: '+e.message+'. Check Supabase update permissions.';await refresh()}
  finally{sortingBusy=false}
 }
@@ -78,15 +77,17 @@ async function refresh(){
  rows=data||[];renderStats();$('items').replaceChildren();
  const section=window.adminSection?.();
  const filtered=rows.filter(x=>section==='overview'||x.category===section);
- $('orderHint').classList.toggle('hide',section!=='certificate');
+ const canSort=section!=='overview'&&section!=='resume';
+ $('orderHint').classList.toggle('hide',!canSort);
+ $('orderStatus').textContent='';
  $('visibleCount').textContent=filtered.length+' items';
  if(!filtered.length){msg('items','No uploaded items yet.');return}
  filtered.forEach((x,i)=>{
-  const d=document.createElement('div');d.className='item'+(section==='certificate'?' sortable-cert':'');
+  const d=document.createElement('div');d.className='item'+(canSort?' sortable-cert':'');
   d.dataset.id=x.id;
   const left=document.createElement('div');left.className='item-title-wrap';
-  if(section==='certificate'){
-   const handle=document.createElement('span');handle.className='sort-handle';handle.textContent='⠿';handle.title='Drag to reorder';handle.setAttribute('aria-hidden','true');handle.setAttribute('role','button');handle.setAttribute('aria-label','Drag to reorder '+x.title);left.append(handle);
+  if(canSort){
+   const handle=document.createElement('span');handle.className='sort-handle';handle.textContent='⠿';handle.title='Drag to reorder '+x.category;handle.setAttribute('aria-hidden','true');handle.setAttribute('role','button');handle.setAttribute('aria-label','Drag to reorder '+x.title);left.append(handle);
    // Reorder using document-level pointer tracking, not pointer capture.
    // The row follows the pointer and swaps as it crosses other rows.
    handle.style.touchAction='none';
@@ -135,7 +136,7 @@ async function refresh(){
      if(event.pointerId!==pointerId||finished)return;
      finished=true;cleanup();
      const ids=[...list.querySelectorAll('.sortable-cert')].map(el=>el.dataset.id);
-     if(moved&&ids.join('|')!==before)await saveCertificateOrder(ids);
+     if(moved&&ids.join('|')!==before)await saveSectionOrder(ids,section);
     };
     const cancel=event=>{if(event.pointerId!==pointerId||finished)return;finished=true;cleanup();refresh()};
     document.addEventListener('pointermove',move,{passive:false});
@@ -148,10 +149,10 @@ async function refresh(){
   const copy=document.createElement('div');const strong=document.createElement('strong');strong.textContent=x.title;
   const p=document.createElement('div');p.className='muted';p.textContent=x.category+' · '+(x.description||'').slice(0,90);copy.append(strong,p);left.append(copy);
   const actions=document.createElement('div');actions.className='item-actions';
-  if(section==='certificate'){
+  if(canSort){
    for(const [direction,symbol] of [[-1,'↑'],[1,'↓']]){
     const move=document.createElement('button');move.type='button';move.className='outline order-btn';move.textContent=symbol;move.title=direction<0?'Move up':'Move down';move.setAttribute('aria-label',move.title+' '+x.title);move.disabled=(direction<0&&i===0)||(direction>0&&i===filtered.length-1);
-    move.onclick=async()=>{const nodes=[...$('items').querySelectorAll('.sortable-cert')];const from=nodes.indexOf(d),to=from+direction;if(to<0||to>=nodes.length)return;$('items').insertBefore(d,direction<0?nodes[to]:nodes[to].nextSibling);await saveCertificateOrder([...$('items').querySelectorAll('.sortable-cert')].map(el=>el.dataset.id))};actions.append(move)
+    move.onclick=async()=>{const nodes=[...$('items').querySelectorAll('.sortable-cert')];const from=nodes.indexOf(d),to=from+direction;if(to<0||to>=nodes.length)return;$('items').insertBefore(d,direction<0?nodes[to]:nodes[to].nextSibling);await saveSectionOrder([...$('items').querySelectorAll('.sortable-cert')].map(el=>el.dataset.id),section)};actions.append(move)
    }
   }
   const edit=document.createElement('button');edit.className='outline';edit.textContent='Edit';
