@@ -892,5 +892,21 @@ updateResumeLink();
  prepare();
 })();
 </script>
-</body>
+<script id="dynamic-profile-photo-v1">
+(()=>{
+ const bucket='portfolio-media',path='profile/current.webp';
+ const base='https://arzkjiblnrvunqobunjk.supabase.co/storage/v1/object/public/'+bucket+'/'+path;
+ const apply=()=>{
+  const hero=document.querySelector('#home img[alt^="Portrait of Yugesh"]');
+  if(!hero)return;
+  const fallback=hero.getAttribute('src');
+  const fresh=base+'?v='+Math.floor(Date.now()/60000);
+  const test=new Image();
+  test.onload=()=>{hero.src=fresh;hero.style.objectFit='cover'};
+  test.onerror=()=>{if(hero.src===fresh)hero.src=fallback};
+  test.src=fresh;
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
+})();
+</script></body>
 </html>
