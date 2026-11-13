@@ -489,6 +489,34 @@ nav .wrap{height:82px}.brand{color:#f3f0e9;font-size:1.25rem;letter-spacing:-.05
 @media(max-width:680px){nav .wrap{height:68px}#home{min-height:auto;padding:74px 0 70px}#home .hero{grid-template-columns:1fr;gap:20px}#home h1{font-size:clamp(3.25rem,12.5vw,6rem);margin-bottom:22px}#home .photo{max-width:330px;width:75%;margin:10px auto 0}#home .photo::after{right:-15px}#home .lead{font-size:.95rem}h2{font-size:clamp(2.5rem,11vw,4.3rem)}section{padding-top:90px;padding-bottom:90px}.wrap{padding-left:22px;padding-right:22px}}
 @media(prefers-reduced-motion:reduce){.ashley-reveal{opacity:1;translate:none;filter:none;transition:none}#home h1 span b{clip-path:none!important;transform:none!important}}
 </style>
+<style id="ashley-contrast-accessibility-fix-v2">
+/* Light sections: avoid inheriting the previous dark-theme foregrounds. */
+#about .tags span{background:#fff!important;color:#25272b!important;border:1px solid #a3a49e!important}
+#about .tags span:hover{background:#e7ecd5!important;color:#202718!important}
+#about p,#about .about p{color:#34363a!important}
+/* Footer was using var(--charcoal), now a light ink color in the redesign. */
+footer{background:#f0eee7!important;color:#35383d!important;border-top:1px solid #d5d3cc}
+footer .brand{color:#151619!important}
+footer .tag,footer .ft a,footer .ft nav a,footer a,footer p,footer .copy,footer .bottom,footer small{color:#4a4e52!important}
+footer .ft a:hover,footer a:hover{color:#536c12!important}
+footer .ft nav{background:transparent!important;border:0!important;backdrop-filter:none!important}
+footer .ft nav a{opacity:1!important}
+footer .brand .c{color:#607719!important}
+/* The certificate action was dark blue on near-black card backgrounds. */
+#certs .cert-card .cert-card-info{color:#e9e9e6!important}
+#certs .cert-card .cert-card-info h3{color:#f7f5ef!important}
+#certs .cert-card .cert-card-info p{color:#b3b8c3!important}
+#certs .cert-card .cert-card-info .cert-open{color:#d7ff70!important;background:rgba(213,255,76,.075)!important;border:1px solid rgba(213,255,76,.48)!important;text-shadow:none!important}
+#certs .cert-card .cert-card-info .cert-open:hover,#certs .cert-card .cert-card-info .cert-open:focus-visible{color:#11140b!important;background:#d5ff4c!important;border-color:#d5ff4c!important}
+/* Skills on neon-lime must use black ink, including nested icons. */
+#skills.dark-s,#skills.dark-s .tool,#skills.dark-s .tg h3{color:#15190b!important}
+#skills.dark-s .tool i{color:#162009!important;background:rgba(0,0,0,.075)!important}
+#skills.dark-s h2{color:#11140b!important;overflow:visible!important;padding-bottom:.12em;margin-bottom:32px}
+#skills.dark-s .label{color:#354417!important}
+/* Prevent huge editorial headings from getting cut by glyph descenders. */
+#about h2,#certs h2{overflow:visible!important;padding-bottom:.09em}
+@media(max-width:680px){footer .ft{gap:22px}#skills.dark-s h2{overflow-wrap:anywhere}}
+</style>
 </head>
 <body>
 <div id="pre" class="cinematic-intro" role="status" aria-label="Opening Yugesh portfolio">
