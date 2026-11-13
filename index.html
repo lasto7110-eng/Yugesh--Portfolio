@@ -673,7 +673,16 @@ html.ld-locked,html.ld-locked body{overflow:hidden!important}
 #pre.laptop-dive-intro .ld-cursor-glow,#pre.laptop-dive-intro .ld-cursor-core{display:none!important}
 }
 </style>
-</head>
+<style id="ld-soft-glow-only-v5">
+/* Ambient cursor illumination only: no dot, halo outline or decorative orbit rings. */
+#pre.laptop-dive-intro .ld-cursor-core{display:none!important}
+#pre.laptop-dive-intro .ld-orbit{display:none!important}
+#pre.laptop-dive-intro .ld-cursor-glow{
+ width:440px!important;height:440px!important;border:0!important;
+ background:radial-gradient(ellipse at center,rgba(196,255,112,.24) 0%,rgba(143,251,131,.15) 20%,rgba(91,215,154,.075) 40%,rgba(80,190,142,.025) 58%,transparent 77%)!important;
+ filter:blur(35px)!important;mix-blend-mode:screen!important;
+}
+</style></head>
 <body>
 <div id="pre" class="laptop-dive-intro" role="dialog" aria-modal="true" aria-label="Yugesh cinematic portfolio introduction" tabindex="-1">
   <div class="ld-noise" aria-hidden="true"></div>
@@ -1497,7 +1506,7 @@ updateResumeLink();
  const animate=()=>{
   if(!root.isConnected){raf=0;return;}
   x+=(tx-x)*.16;y+=(ty-y)*.16;
-  halo.style.transform=`translate3d(${x-170}px,${y-170}px,0)`;
+  halo.style.transform=`translate3d(${x-220}px,${y-220}px,0)`;
   core.style.transform=`translate3d(${tx-7}px,${ty-7}px,0)`;
   raf=requestAnimationFrame(animate);
  };
