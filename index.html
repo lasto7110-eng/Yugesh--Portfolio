@@ -652,6 +652,27 @@ html.ld-locked,html.ld-locked body{overflow:hidden!important}
 @media(max-width:820px){#pre .ld-cord-shadow{stroke-width:5}#pre .ld-cord-line{stroke-width:3}}
 @media(prefers-reduced-motion:reduce){#pre .ld-id{animation:none!important;transform:rotate(7deg)!important}}
 </style>
+
+<style id="ld-cursor-glow-v4">
+#pre.laptop-dive-intro .ld-cursor-glow{
+ position:absolute;left:0;top:0;width:340px;height:340px;border-radius:50%;
+ z-index:2;pointer-events:none;opacity:0;transform:translate3d(-500px,-500px,0);
+ background:radial-gradient(circle,rgba(213,255,111,.30) 0%,rgba(165,255,117,.16) 24%,rgba(104,236,166,.09) 48%,transparent 73%);
+ filter:blur(18px);mix-blend-mode:screen;will-change:transform,opacity;
+ transition:opacity .35s ease;
+}
+#pre.laptop-dive-intro .ld-cursor-glow.ld-active{opacity:1}
+#pre.laptop-dive-intro .ld-cursor-core{
+ position:absolute;left:0;top:0;width:14px;height:14px;border-radius:50%;
+ z-index:9;pointer-events:none;opacity:0;transform:translate3d(-500px,-500px,0);
+ background:#d5ff79;box-shadow:0 0 16px 6px rgba(205,255,102,.35),0 0 38px 12px rgba(148,255,111,.17);
+ transition:opacity .25s ease;will-change:transform;
+}
+#pre.laptop-dive-intro .ld-cursor-core.ld-active{opacity:.65}
+@media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){
+#pre.laptop-dive-intro .ld-cursor-glow,#pre.laptop-dive-intro .ld-cursor-core{display:none!important}
+}
+</style>
 </head>
 <body>
 <div id="pre" class="laptop-dive-intro" role="dialog" aria-modal="true" aria-label="Yugesh cinematic portfolio introduction" tabindex="-1">
@@ -1462,6 +1483,32 @@ updateResumeLink();
  const key=e=>{if(state==='done')return;if(['ArrowDown','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();dive()}if(e.key==='Escape'){e.preventDefault();unlock()}};
  window.addEventListener('wheel',wheel,{passive:false});window.addEventListener('touchstart',touchstart,{passive:true});window.addEventListener('touchmove',touchmove,{passive:false});window.addEventListener('keydown',key);
  intro.focus({preventScroll:true});
+})();
+</script>
+
+<script id="ld-cursor-glow-controller-v4">
+(()=>{
+ const root=document.querySelector('#pre.laptop-dive-intro');
+ if(!root||!matchMedia('(hover:hover) and (pointer:fine)').matches||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+ const halo=document.createElement('div'),core=document.createElement('div');
+ halo.className='ld-cursor-glow';core.className='ld-cursor-core';
+ root.append(halo,core);
+ let tx=innerWidth/2,ty=innerHeight/2,x=tx,y=ty,active=false,raf=0;
+ const animate=()=>{
+  if(!root.isConnected){raf=0;return;}
+  x+=(tx-x)*.16;y+=(ty-y)*.16;
+  halo.style.transform=`translate3d(${x-170}px,${y-170}px,0)`;
+  core.style.transform=`translate3d(${tx-7}px,${ty-7}px,0)`;
+  raf=requestAnimationFrame(animate);
+ };
+ root.addEventListener('pointermove',e=>{
+  if(e.pointerType==='touch')return;
+  const rect=root.getBoundingClientRect();
+  tx=e.clientX-rect.left;ty=e.clientY-rect.top;
+  if(!active){active=true;x=tx;y=ty;halo.classList.add('ld-active');core.classList.add('ld-active');}
+  if(!raf)raf=requestAnimationFrame(animate);
+ },{passive:true});
+ root.addEventListener('pointerleave',()=>{active=false;halo.classList.remove('ld-active');core.classList.remove('ld-active')});
 })();
 </script>
 </body>
